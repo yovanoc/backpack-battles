@@ -8,7 +8,7 @@ pub const TICK_DURATION: Duration = Duration::from_millis(100);
 /// Base health each hero starts with before bag max-health bonuses. 300 gives
 /// long-ish fights with room for ramping/scaling builds and comebacks to come
 /// online, without the grind-out tail of very high HP pools.
-pub const BASE_HEALTH: u16 = 300;
+pub const BASE_HEALTH: u16 = 250;
 
 /// Opening block reserve the defending (right) hero starts each battle with,
 /// calibrated to offset the attacker's even-rank timing edge (design §13).

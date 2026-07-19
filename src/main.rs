@@ -89,7 +89,7 @@ enum Commands {
     /// Draft many bags, select the winning elite, and report item presence and
     /// build diversity - the mixed-bag meta health, not pure archetypes.
     Meta {
-        #[arg(long, default_value_t = 400)]
+        #[arg(long, default_value_t = 128)]
         candidates: u64,
         #[arg(long, default_value_t = 96)]
         panel: u64,
@@ -108,7 +108,7 @@ enum Commands {
     /// counter-graph: no wells, contested counters, substantial counters,
     /// cycles present, living roster.
     Verdict {
-        #[arg(long, default_value_t = 400)]
+        #[arg(long, default_value_t = 128)]
         candidates: u64,
         #[arg(long, default_value_t = 96)]
         panel: u64,

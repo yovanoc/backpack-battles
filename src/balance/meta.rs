@@ -333,25 +333,62 @@ pub fn run_verdict(config: &MetaConfig) -> VerdictReport {
 }
 
 fn draft_and_rank(config: &MetaConfig) -> (Vec<Bag>, Vec<usize>, Vec<f64>, usize) {
+    const GENERATIONS: usize = 12;
     let mut rng = Rng::new(config.seed);
-    let candidates: Vec<Bag> = (0..config.candidates)
+    let pop_size = (config.candidates as usize).max(4);
+    let mut population: Vec<Bag> = (0..pop_size)
         .map(|_| random_bag(&mut rng, config.allow_rotation))
         .collect();
-    let panel_len = (config.panel as usize).min(candidates.len());
 
+    // Coevolution: each generation, score every bag against the whole
+    // population (paired), keep the fittest half, refill by mutating survivors.
+    // Bags adapt to each other, so the survivors are an optimised,
+    // drafted-quality meta - the right sample to judge balance on, instead of
+    // fragile random bags.
+    let mut fitness = population_fitness(config, &population);
+    for _ in 0..GENERATIONS {
+        let mut order: Vec<usize> = (0..population.len()).collect();
+        order.sort_by(|&a, &b| fitness[b].total_cmp(&fitness[a]).then(a.cmp(&b)));
+        let keep = (population.len() / 2).max(1);
+        let survivors: Vec<Bag> = order[..keep]
+            .iter()
+            .map(|&i| population[i].clone())
+            .collect();
+        let mut next = survivors.clone();
+        while next.len() < population.len() {
+            let parent =
+                &survivors[usize::try_from(rng.below(survivors.len() as u64)).unwrap_or(0)];
+            next.push(super::generator::mutate(
+                parent,
+                &mut rng,
+                config.allow_rotation,
+            ));
+        }
+        population = next;
+        fitness = population_fitness(config, &population);
+    }
+
+    let mut order: Vec<usize> = (0..population.len()).collect();
+    order.sort_by(|&a, &b| fitness[b].total_cmp(&fitness[a]).then(a.cmp(&b)));
+    order.truncate(config.elite_size.min(order.len()));
+    (population, order, fitness, pop_size)
+}
+
+/// Mean paired win rate of each bag against the whole population (both sides).
+fn population_fitness(config: &MetaConfig, population: &[Bag]) -> Vec<f64> {
     let threads = std::thread::available_parallelism().map_or(1, std::num::NonZero::get);
-    let mut fitness = vec![0.0_f64; candidates.len()];
+    let mut fitness = vec![0.0_f64; population.len()];
     std::thread::scope(|scope| {
-        let candidates = &candidates;
+        let population = &population;
         let handles: Vec<_> = (0..threads)
             .map(|offset| {
                 scope.spawn(move || {
                     let mut local = Vec::new();
                     let mut index = offset;
-                    while index < candidates.len() {
+                    while index < population.len() {
                         local.push((
                             index,
-                            candidate_fitness(config, candidates, index, panel_len),
+                            candidate_fitness(config, population, index, population.len()),
                         ));
                         index += threads;
                     }
@@ -365,11 +402,7 @@ fn draft_and_rank(config: &MetaConfig) -> (Vec<Bag>, Vec<usize>, Vec<f64>, usize
             }
         }
     });
-
-    let mut order: Vec<usize> = (0..candidates.len()).collect();
-    order.sort_by(|&a, &b| fitness[b].total_cmp(&fitness[a]).then(a.cmp(&b)));
-    order.truncate(config.elite_size.min(order.len()));
-    (candidates, order, fitness, panel_len)
+    fitness
 }
 
 /// Paired win rate of every elite bag against every other: beat[i][j] is the

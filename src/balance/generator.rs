@@ -72,6 +72,48 @@ fn sample_bag(rng: &mut Rng, allow_rotation: bool, mode: CampaignMode, bag_index
     Bag::new(items).expect("generator only places valid, non-overlapping items")
 }
 
+/// Produce a neighbour of `bag` for coevolution: drop one random item, then
+/// refill free cells with random legal items (<= 2 copies per kind). Keeps most
+/// of the bag while exploring new compositions and placements.
+pub(super) fn mutate(bag: &Bag, rng: &mut Rng, allow_rotation: bool) -> Bag {
+    let mut items: Vec<Item> = bag.items().to_vec();
+    if !items.is_empty() {
+        let victim = usize::try_from(rng.below(items.len() as u64)).unwrap_or(0);
+        items.remove(victim);
+    }
+    let mut occupied = [false; BAG_CELLS];
+    let mut copies = [0_u8; ItemKind::COUNT];
+    for item in &items {
+        for offset in item.shape() {
+            if let Some(index) = cell_index(item.position(), *offset) {
+                occupied[index] = true;
+            }
+        }
+        copies[item.kind() as usize] += 1;
+    }
+    for _ in 0..PLACEMENT_ATTEMPTS {
+        let kind = *rng.choice(&ItemKind::ALL);
+        if copies[kind as usize] >= 2 {
+            continue;
+        }
+        let rotation = if allow_rotation {
+            *rng.choice(&Rotation::ALL)
+        } else {
+            Rotation::Deg0
+        };
+        let anchor = Cell::new(
+            u8::try_from(rng.below(u64::from(BAG_WIDTH))).unwrap_or(0),
+            u8::try_from(rng.below(u64::from(BAG_HEIGHT))).unwrap_or(0),
+        );
+        let candidate = Item::with_rotation(kind, anchor, rotation);
+        if place(&candidate, &mut occupied) {
+            copies[kind as usize] += 1;
+            items.push(candidate);
+        }
+    }
+    Bag::new(items).expect("mutate keeps items valid and non-overlapping")
+}
+
 /// Realized adjacency payoff: for each buff item, how many adjacent items it
 /// helps, weighted by the strength of the help. Best-of-N picks the arrangement
 /// that lands the most total synergy weight.
