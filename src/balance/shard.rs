@@ -20,6 +20,9 @@ pub(super) struct ShardReport {
     pub(super) mirrored_draws: u64,
     pub(super) fall_telemetry: FallTelemetry,
     pub(super) duration_histogram: [u64; MAX_TICKS as usize + 1],
+    pub(super) lead_changes: u64,
+    pub(super) swing_battles: u64,
+    pub(super) decided_tick_total: u64,
 }
 
 pub(super) fn run(config: &BalanceConfig, shard: u64, shards: u64) -> ShardReport {
@@ -36,6 +39,9 @@ pub(super) fn run(config: &BalanceConfig, shard: u64, shards: u64) -> ShardRepor
         mirrored_draws: 0,
         fall_telemetry: FallTelemetry::default(),
         duration_histogram: [0; MAX_TICKS as usize + 1],
+        lead_changes: 0,
+        swing_battles: 0,
+        decided_tick_total: 0,
     };
     let mut index = shard;
     while index < config.battles {
@@ -70,7 +76,7 @@ fn run_battle(config: &BalanceConfig, index: u64, report: &mut ShardReport) {
     let battle_seed = rng.next_u64();
     let battle_config =
         BattleConfig::new(config.tick_limit, battle_seed).expect("tick limit already validated");
-    let (result, falls) = simulate_with_telemetry(
+    let (result, falls, decisiveness) = simulate_with_telemetry(
         Hero::new("left", config.hero_health, left_bag.clone()),
         Hero::new("right", config.hero_health, right_bag.clone()),
         battle_config,
@@ -83,6 +89,11 @@ fn run_battle(config: &BalanceConfig, index: u64, report: &mut ShardReport) {
     report.fall_telemetry.succeeded += falls.succeeded;
     report.total_ticks += u64::from(result.ticks);
     report.duration_histogram[usize::from(result.ticks)] += 1;
+    report.lead_changes += u64::from(decisiveness.lead_changes);
+    if decisiveness.lead_changes > 0 {
+        report.swing_battles += 1;
+    }
+    report.decided_tick_total += u64::from(decisiveness.decided_tick);
     let (left_tally, right_tally) = match result.outcome {
         Outcome::LeftWins => {
             report.left_wins += 1;

@@ -36,6 +36,12 @@ pub(crate) fn run(config: BalanceConfig) -> ExitCode {
         report.duration_p90(),
         report.duration_p99()
     );
+    println!(
+        "interest: swing rate={:.1}%, lead changes mean={:.2}, decided at {:.0}% of fight",
+        report.swing_rate() * 100.0,
+        report.mean_lead_changes(),
+        report.mean_decided_fraction() * 100.0
+    );
     if report.mirrored_battles > 0 {
         println!(
             "paired side bias: {:+.2}pp across {} original+mirrored battles",

@@ -80,6 +80,9 @@ pub struct BalanceReport {
     pub mirrored_draws: u64,
     pub fall_telemetry: FallTelemetry,
     pub duration_histogram: [u64; MAX_TICKS as usize + 1],
+    pub lead_changes: u64,
+    pub swing_battles: u64,
+    pub decided_tick_total: u64,
     pub stats: Vec<ItemStat>,
 }
 
@@ -125,6 +128,34 @@ impl BalanceReport {
 
     pub fn duration_p99(&self) -> u16 {
         percentile(&self.duration_histogram, (self.battles * 99).div_ceil(100))
+    }
+
+    /// Mean HP-lead flips per fight. 0 = one-sided stomps.
+    pub fn mean_lead_changes(&self) -> f64 {
+        if self.battles == 0 {
+            0.0
+        } else {
+            self.lead_changes as f64 / self.battles as f64
+        }
+    }
+
+    /// Fraction of fights whose HP lead changed at least once (had a swing).
+    pub fn swing_rate(&self) -> f64 {
+        if self.battles == 0 {
+            0.0
+        } else {
+            self.swing_battles as f64 / self.battles as f64
+        }
+    }
+
+    /// Mean fraction of the fight elapsed before the winner locked in the lead;
+    /// higher means the outcome stayed live later into the fight.
+    pub fn mean_decided_fraction(&self) -> f64 {
+        if self.total_ticks == 0 {
+            0.0
+        } else {
+            self.decided_tick_total as f64 / self.total_ticks as f64
+        }
     }
 }
 

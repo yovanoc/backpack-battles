@@ -83,6 +83,9 @@ pub fn run_balance(config: &BalanceConfig) -> Result<BalanceReport, ConfigError>
     let mut mirrored_draws = 0;
     let mut fall_telemetry = FallTelemetry::default();
     let mut duration_histogram = [0; MAX_TICKS as usize + 1];
+    let mut lead_changes = 0;
+    let mut swing_battles = 0;
+    let mut decided_tick_total = 0;
 
     std::thread::scope(|scope| {
         let handles: Vec<_> = (0..shards)
@@ -94,6 +97,9 @@ pub fn run_balance(config: &BalanceConfig) -> Result<BalanceReport, ConfigError>
             right_wins += local.right_wins;
             draws += local.draws;
             total_ticks += local.total_ticks;
+            lead_changes += local.lead_changes;
+            swing_battles += local.swing_battles;
+            decided_tick_total += local.decided_tick_total;
             unclassified_matchups += local.unclassified_matchups;
             mirrored_left_wins += local.mirrored_left_wins;
             mirrored_right_wins += local.mirrored_right_wins;
@@ -147,6 +153,9 @@ pub fn run_balance(config: &BalanceConfig) -> Result<BalanceReport, ConfigError>
         mirrored_draws,
         fall_telemetry,
         duration_histogram,
+        lead_changes,
+        swing_battles,
+        decided_tick_total,
         stats,
     })
 }

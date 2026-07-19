@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 
 use crate::{
     BattleConfig, BattleEvent, BattleResult, BattleUpdate, Combat, DEFENDER_GUARD, DamageMode,
-    FallTelemetry, Hero, ItemRef, Outcome, Side, TickReport, combat::RankOutcome, random_bag,
-    rng::Rng,
+    Decisiveness, FallTelemetry, Hero, ItemRef, Outcome, Side, TickReport, combat::RankOutcome,
+    random_bag, rng::Rng,
 };
 
 #[derive(Debug)]
@@ -135,19 +135,36 @@ pub(crate) fn simulate_with_telemetry(
     left: Hero,
     right: Hero,
     config: BattleConfig,
-) -> (BattleResult, FallTelemetry) {
+) -> (BattleResult, FallTelemetry, Decisiveness) {
     let mut battle = Battle::new(left, right, config);
+    let mut decisiveness = Decisiveness::default();
     if let Some(result) = battle.result {
-        return (result, battle.combat.fall_telemetry);
+        return (result, battle.combat.fall_telemetry, decisiveness);
     }
-    // One events buffer reused across every tick instead of a fresh Vec per tick.
     let mut events = Vec::with_capacity(12);
+    let mut prev_sign = lead_sign(&battle);
     loop {
         events.clear();
         battle.step(&mut events);
-        if let Some(result) = battle.result {
-            return (result, battle.combat.fall_telemetry);
+        let sign = lead_sign(&battle);
+        if sign != 0 && prev_sign != 0 && sign != prev_sign {
+            decisiveness.lead_changes += 1;
+            decisiveness.decided_tick = battle.tick;
         }
+        if sign != 0 {
+            prev_sign = sign;
+        }
+        if let Some(result) = battle.result {
+            return (result, battle.combat.fall_telemetry, decisiveness);
+        }
+    }
+}
+
+fn lead_sign(battle: &Battle) -> i8 {
+    match battle.combat.left.health.cmp(&battle.combat.right.health) {
+        Ordering::Greater => 1,
+        Ordering::Less => -1,
+        Ordering::Equal => 0,
     }
 }
 

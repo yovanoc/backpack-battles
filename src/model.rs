@@ -165,6 +165,17 @@ pub struct FallTelemetry {
     pub shared_lethal_ranks: u64,
 }
 
+/// How interesting a fight was, not who won. A deterministic engine still
+/// wants fights whose outcome is not obvious in the first few seconds.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Decisiveness {
+    /// Times the HP leader flipped during the fight. 0 = one-sided stomp.
+    pub lead_changes: u32,
+    /// Tick of the last lead flip - when the eventual winner locked in. Late
+    /// (relative to total ticks) means the fight stayed live to the end.
+    pub decided_tick: u16,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BattleEvent {
     ItemActivated {
