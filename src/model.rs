@@ -2,13 +2,14 @@ use std::{error::Error, fmt, time::Duration};
 
 use crate::{Bag, ItemKind, ItemRef};
 
-pub const MAX_TICKS: u16 = 600;
+pub const MAX_TICKS: u16 = 2000;
 pub const TICK_DURATION: Duration = Duration::from_millis(100);
 
-/// Base health each hero starts with before bag max-health bonuses. Calibrated
-/// so the median fight lasts ~200 ticks (20s): long enough for sustain and
-/// scaling comebacks to matter, short enough to stay decisive.
-pub const BASE_HEALTH: u16 = 170;
+/// Base health each hero starts with before bag max-health bonuses. High (500)
+/// so battles run long and ramping/scaling builds have time to come online:
+/// fixed-damage effects (poison, weapons) are relatively weaker, favoring
+/// late-game power and comebacks.
+pub const BASE_HEALTH: u16 = 500;
 
 /// Opening block reserve the defending (right) hero starts each battle with,
 /// calibrated to offset the attacker's even-rank timing edge (design §13).

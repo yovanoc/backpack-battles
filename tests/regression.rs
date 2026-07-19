@@ -128,8 +128,8 @@ fn battle_config_rejects_tick_limits_outside_the_domain() {
         Err(ConfigError::InvalidTickLimit(0))
     );
     assert_eq!(
-        BattleConfig::new(601, 1),
-        Err(ConfigError::InvalidTickLimit(601))
+        BattleConfig::new(2001, 1),
+        Err(ConfigError::InvalidTickLimit(2001))
     );
 }
 

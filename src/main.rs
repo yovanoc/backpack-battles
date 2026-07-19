@@ -50,7 +50,7 @@ enum Commands {
     Battle {
         #[arg(long, default_value_t = 42)]
         seed: u64,
-        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
         ticks: u16,
         /// Wait 100 ms per tick instead of resolving instantly.
         #[arg(long)]
@@ -62,7 +62,7 @@ enum Commands {
         battles: u64,
         #[arg(long, default_value_t = 42)]
         seed: u64,
-        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
         ticks: u16,
         /// Base health each generated hero starts with.
         #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
@@ -80,7 +80,7 @@ enum Commands {
     Watch {
         #[arg(long, default_value_t = 42)]
         seed: u64,
-        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
         ticks: u16,
         /// Playback speed multiplier (2.0 = twice as fast as real time).
         #[arg(long, default_value_t = 1.0, value_parser = watch::parse_speed)]
@@ -97,7 +97,7 @@ enum Commands {
         elite: usize,
         #[arg(long, default_value_t = 42)]
         seed: u64,
-        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
         ticks: u16,
         #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
         health: u16,
@@ -116,7 +116,7 @@ enum Commands {
         elite: usize,
         #[arg(long, default_value_t = 42)]
         seed: u64,
-        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
         ticks: u16,
         #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
         health: u16,

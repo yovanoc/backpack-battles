@@ -4,15 +4,27 @@ use crate::{
     BattleEvent, Combat, DamageMode, Effect, EffectKind, FallCause, ItemRef, ItemTarget, Side,
 };
 
-/// A hero at or below this percentage of max health is in "last stand": it
-/// takes reduced weapon damage AND deals boosted weapon damage, so a cornered
-/// hero can flip the lead late instead of merely stalling. Raw poison and
-/// health-loss ignore last stand by design.
-const RALLY_THRESHOLD_PCT: u32 = 30;
-/// Fraction (1/N) of weapon damage shrugged off while in last stand.
-const RALLY_MITIGATION_DIVISOR: u16 = 3;
-/// Fraction (1/N) of extra weapon damage a hero deals while in last stand.
-const RALLY_DAMAGE_BONUS_DIVISOR: u16 = 2;
+/// Rubber-band "last stand": a hero below RALLY_START_DEFICIT_PCT of max health
+/// scales both defense and offense with how far behind it is - the more beaten
+/// down, the more weapon damage it shrugs off and the harder it hits back. This
+/// keeps leads contestable late instead of snowballing. Raw poison and
+/// health-loss ignore it by design.
+const RALLY_START_DEFICIT_PCT: u32 = 50;
+/// Peak incoming weapon-damage reduction (percent) at near-death.
+const RALLY_MAX_MITIGATION_PCT: u32 = 40;
+/// Peak outgoing weapon-damage bonus (percent) at near-death.
+const RALLY_MAX_BONUS_PCT: u32 = 60;
+
+/// Rally intensity 0..=100: 0 at/above the deficit threshold, rising linearly
+/// to 100 at 0 health.
+fn rally_pct(health: u16, max_health: u16) -> u32 {
+    if max_health == 0 {
+        return 0;
+    }
+    let deficit =
+        u32::from(max_health).saturating_sub(u32::from(health)) * 100 / u32::from(max_health);
+    deficit.saturating_sub(RALLY_START_DEFICIT_PCT) * 100 / (100 - RALLY_START_DEFICIT_PCT)
+}
 
 impl Combat {
     pub(crate) fn resolve_effects(&mut self, effects: Vec<Effect>, events: &mut Vec<BattleEvent>) {
@@ -183,18 +195,18 @@ impl Combat {
             self.hero(source.side).bag.adjacent_damage_bonus(source.id)
         });
         let source_hero = self.hero(source.side);
-        let source_rallying = u32::from(source_hero.health) * 100
-            <= u32::from(source_hero.max_health()) * RALLY_THRESHOLD_PCT;
+        let source_rally = rally_pct(source_hero.health, source_hero.max_health());
         // Retaliation is raw (design layer-5): it ignores armor and block.
         let armor = match damage.mode {
             DamageMode::Normal => self.hero(damage.target).armor(),
             DamageMode::Piercing | DamageMode::Retaliation => 0,
         };
         let boosted = match damage.mode {
-            DamageMode::Normal | DamageMode::Piercing if source_rallying => damage
-                .amount
-                .saturating_add(damage.amount / RALLY_DAMAGE_BONUS_DIVISOR),
-            DamageMode::Normal | DamageMode::Piercing | DamageMode::Retaliation => damage.amount,
+            DamageMode::Normal | DamageMode::Piercing => {
+                let bonus = u32::from(damage.amount) * RALLY_MAX_BONUS_PCT * source_rally / 10_000;
+                damage.amount.saturating_add(bonus as u16)
+            }
+            DamageMode::Retaliation => damage.amount,
         };
         let after_armor = boosted.saturating_add(adjacent_bonus).saturating_sub(armor);
         let max_health = self.hero(damage.target).max_health();
@@ -211,12 +223,9 @@ impl Combat {
             });
         }
         let raw = after_armor - blocked;
-        let incoming =
-            if u32::from(hero.health) * 100 <= u32::from(max_health) * RALLY_THRESHOLD_PCT {
-                raw.saturating_sub(raw / RALLY_MITIGATION_DIVISOR)
-            } else {
-                raw
-            };
+        let target_rally = rally_pct(hero.health, max_health);
+        let reduction = u32::from(raw) * RALLY_MAX_MITIGATION_PCT * target_rally / 10_000;
+        let incoming = raw.saturating_sub(reduction as u16);
         let lost = hero.health.min(incoming);
         hero.health -= lost;
         events.push(BattleEvent::DamageDealt {
