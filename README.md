@@ -53,7 +53,7 @@ Hoeffding 95% lower bound.
 | `--battles <N>` | Number of battles to simulate (default 100000). |
 | `--seed <N>` | Fixes the whole campaign (default 42). |
 | `--mirror` | Replays every matchup with bags swapped to isolate engine side bias. |
-| `--campaign <random\|pure\|hybrid>` | Bag generation: random mixes, pure single-archetype, hybrid archetype pairs. |
+| `--campaign <random\|pure\|hybrid\|elite>` | Bag generation: random mixes, pure single-archetype, hybrid archetype pairs, or elite best-of-16 bags arranged to realize adjacency synergies. |
 | `--health <N>` | Base hero health (default 100). |
 | `--ticks <N>` | Tick limit (default 600). |
 | `--no-rotate` | Place every item upright instead of using random rotations. |
@@ -66,6 +66,7 @@ for the interleaving invariant.
 
 - [`CONTEXT.md`](CONTEXT.md) — glossary / ubiquitous language for the battle domain.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — engine architecture, tick order, and how to add an item.
+- [`ITEMS.md`](ITEMS.md) — every item's exact stats and effects, grouped by archetype.
 - [`DESIGN.md`](DESIGN.md) — the terminal UI design system.
 
 ## Development

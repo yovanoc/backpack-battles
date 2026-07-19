@@ -19,6 +19,7 @@ pub struct Hero {
     pub(crate) health: u16,
     pub(crate) block: u16,
     pub(crate) bag: Bag,
+    pub(crate) poison: u16,
 }
 
 impl Hero {
@@ -30,6 +31,7 @@ impl Hero {
             health,
             block: 0,
             bag,
+            poison: 0,
         }
     }
 
@@ -200,6 +202,18 @@ pub enum BattleEvent {
     ItemConsumed {
         item: ItemRef,
         kind: ItemKind,
+    },
+    Poisoned {
+        target: Side,
+        stacks: u16,
+    },
+    PoisonDamage {
+        target: Side,
+        amount: u16,
+    },
+    PoisonCleansed {
+        target: Side,
+        remaining: u16,
     },
 }
 

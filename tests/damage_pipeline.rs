@@ -22,7 +22,7 @@ fn normal_damage_resolves_armor_then_block_then_retaliation() {
         BattleEvent::DamageDealt {
             target: Side::Right,
             mode: DamageMode::Normal,
-            amount: 0,
+            amount: 1,
             ..
         }
     )));
@@ -35,9 +35,9 @@ fn normal_damage_resolves_armor_then_block_then_retaliation() {
             ..
         }
     )));
-    // Right opens with DEFENDER_GUARD (5); Shield tops it up, WoodenSword (8)
-    // minus Armor (2) spends 6, leaving 2 after the tick-40 exchange.
-    assert_eq!(report.right_block, 2);
+    // Right opens with DEFENDER_GUARD (2); Shield adds 6 (max 20). WoodenSword
+    // (8) minus Armor (1) leaves 7; block absorbs 6, so 1 leaks and block ends 0.
+    assert_eq!(report.right_block, 0);
 }
 
 #[test]
@@ -71,7 +71,7 @@ fn piercing_damage_bypasses_armor_and_retaliation_but_spends_block() {
             ..
         }
     )));
-    assert_eq!(report.left_block, 4);
+    assert_eq!(report.left_block, 0);
 }
 
 #[test]
@@ -97,7 +97,7 @@ fn direct_health_loss_bypasses_armor_and_block() {
             ..
         }
     )));
-    assert_eq!(report.left_block, 8);
+    assert_eq!(report.left_block, 6);
 }
 
 #[test]
@@ -302,7 +302,53 @@ fn poison_vial_bypasses_defenses_without_healing_its_owner() {
             ..
         }
     )));
-    assert_eq!(report.left_block, 8);
+    assert_eq!(report.left_block, 6);
+}
+
+#[test]
+fn venom_fang_stacks_poison_that_ticks_down_ignoring_defenses() {
+    // Given: an Armor-only hero on the LEFT (no Shield, so no cleanse) so poison
+    // (2 stacks, raw) is measured against armor it must ignore.
+    let left = Hero::new(
+        "left",
+        100,
+        Bag::new(vec![Item::new(ItemKind::Armor, Cell::new(0, 0))]).expect("valid bag"),
+    );
+    let right = attacking_hero(ItemKind::VenomFang);
+    let mut battle = Battle::new(
+        left,
+        right,
+        BattleConfig::new(14, 1).expect("valid battle config"),
+    );
+
+    // When: Venom Fang applies 2 poison on its tick-12 activation; the left
+    // hero then takes 2 poison at tick 13 and 1 at tick 14 as the stack decays.
+    let applied = report_at(&mut battle, 12);
+    let first_tick = report_at(&mut battle, 13);
+    let second_tick = report_at(&mut battle, 14);
+
+    // Then
+    assert!(applied.events.iter().any(|event| matches!(
+        event,
+        BattleEvent::Poisoned {
+            target: Side::Left,
+            stacks: 2,
+        }
+    )));
+    assert!(first_tick.events.iter().any(|event| matches!(
+        event,
+        BattleEvent::PoisonDamage {
+            target: Side::Left,
+            amount: 2,
+        }
+    )));
+    assert!(second_tick.events.iter().any(|event| matches!(
+        event,
+        BattleEvent::PoisonDamage {
+            target: Side::Left,
+            amount: 1,
+        }
+    )));
 }
 
 fn attacking_hero(kind: ItemKind) -> Hero {

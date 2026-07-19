@@ -44,6 +44,14 @@ pub(crate) enum EffectKind {
     Consume {
         target: ItemRef,
     },
+    ApplyPoison {
+        target: Side,
+        stacks: u16,
+    },
+    CleansePoison {
+        target: Side,
+        amount: u16,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -26,6 +26,7 @@ enum CampaignArg {
     Random,
     Pure,
     Hybrid,
+    Elite,
 }
 
 impl From<CampaignArg> for CampaignMode {
@@ -34,6 +35,7 @@ impl From<CampaignArg> for CampaignMode {
             CampaignArg::Random => Self::Random,
             CampaignArg::Pure => Self::Pure,
             CampaignArg::Hybrid => Self::Hybrid,
+            CampaignArg::Elite => Self::Elite,
         }
     }
 }
@@ -224,5 +226,23 @@ fn print_event(tick: u16, event: &BattleEvent) {
             item.id.cell().x,
             item.id.cell().y
         ),
+        BattleEvent::Poisoned { target, stacks } => {
+            println!(
+                "tick {tick:03}: {} poisoned to {stacks} stacks",
+                target.name()
+            )
+        }
+        BattleEvent::PoisonDamage { target, amount } => {
+            println!(
+                "tick {tick:03}: {} takes {amount} poison damage",
+                target.name()
+            )
+        }
+        BattleEvent::PoisonCleansed { target, remaining } => {
+            println!(
+                "tick {tick:03}: {} cleanses poison to {remaining}",
+                target.name()
+            )
+        }
     }
 }

@@ -99,8 +99,8 @@ fn lethal_hit_still_triggers_cactus_retaliation_in_the_same_cascade() {
 #[test]
 fn defender_opens_with_guard_block_spent_after_armor() {
     // The right (defender) hero starts each battle with DEFENDER_GUARD block.
-    // A left Wooden Sword (8) hits a right Armor hero: armor reduces by 2, the
-    // opening guard (2) absorbs 2 of the remaining 6, and 4 leaks to health.
+    // A left Wooden Sword (8) hits a right Armor hero: armor reduces by 1, the
+    // opening guard (2) absorbs 2 of the remaining 7, and 5 leaks to health.
     let left = hero("left", 500, vec![item(ItemKind::WoodenSword, 0, 0)]);
     let right = hero("right", 500, vec![item(ItemKind::Armor, 0, 0)]);
     let mut battle = Battle::new(
@@ -113,14 +113,14 @@ fn defender_opens_with_guard_block_spent_after_armor() {
     let opening = report_at(&mut battle, 1);
     assert_eq!(opening.right_block, DEFENDER_GUARD);
 
-    // Guard is 2, so 6 damage spends the whole guard and 4 leaks to health.
-    let right_max = 500 + 40; // Armor +40 max health
+    // Guard is 2, so the 7 that lands after armor spends the whole guard and 5 leaks.
+    let right_max = 500 + 28; // Armor +28 max health
     let report = report_at(&mut battle, 20);
     assert_eq!(
         report.right_block, 0,
-        "guard fully spent by the 6 that lands"
+        "guard fully spent by the 7 that lands"
     );
-    assert_eq!(report.right_health, right_max - 4);
+    assert_eq!(report.right_health, right_max - 5);
 }
 
 #[test]

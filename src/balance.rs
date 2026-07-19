@@ -15,6 +15,7 @@ pub enum CampaignMode {
     Random,
     Pure,
     Hybrid,
+    Elite,
 }
 
 impl CampaignMode {
@@ -23,6 +24,7 @@ impl CampaignMode {
             Self::Random => "random",
             Self::Pure => "pure",
             Self::Hybrid => "hybrid",
+            Self::Elite => "elite",
         }
     }
 
@@ -31,6 +33,7 @@ impl CampaignMode {
             Self::Random => None,
             Self::Pure => Some(Archetype::COUNT as u64),
             Self::Hybrid => Some((Archetype::COUNT * (Archetype::COUNT - 1)) as u64),
+            Self::Elite => None,
         }
     }
 }

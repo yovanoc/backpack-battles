@@ -44,6 +44,20 @@ pub(crate) fn battle_start(item: &mut Item, source: ItemRef) -> Vec<Effect> {
             ),
             Effect::new(source, EffectKind::Consume { target: source }),
         ],
+        ItemState::Bola => vec![
+            Effect::new(
+                source,
+                EffectKind::AttemptFall {
+                    target: ItemTarget::LightestEdge {
+                        side: source.side.opponent(),
+                        weapons_only: false,
+                    },
+                    cause: FallCause::Forced { source },
+                    chance: None,
+                },
+            ),
+            Effect::new(source, EffectKind::Consume { target: source }),
+        ],
         ItemState::WoodenSword
         | ItemState::Crossbow
         | ItemState::Whetstone
@@ -75,7 +89,22 @@ pub(crate) fn battle_start(item: &mut Item, source: ItemRef) -> Vec<Effect> {
         | ItemState::ShrapnelMine
         | ItemState::BearTrap
         | ItemState::SignalDrum
-        | ItemState::FieldKit => Vec::new(),
+        | ItemState::FieldKit
+        | ItemState::Katana
+        | ItemState::ThrowingAxe
+        | ItemState::MorningStar
+        | ItemState::Chainmail
+        | ItemState::Bulwark
+        | ItemState::VenomFang
+        | ItemState::Spellbook { .. }
+        | ItemState::VampiricBlade
+        | ItemState::PlagueCenser
+        | ItemState::Grenade
+        | ItemState::HarpoonGun { .. }
+        | ItemState::Grindstone
+        | ItemState::Metronome
+        | ItemState::MedicBag
+        | ItemState::RallyingHorn => Vec::new(),
     }
 }
 
@@ -88,7 +117,7 @@ pub(crate) fn tick(item: &mut Item, source: ItemRef, health: u16, max_health: u1
                 source,
                 EffectKind::Heal {
                     target: source.side,
-                    amount: 25,
+                    amount: 16,
                 },
             ),
             Effect::new(source, EffectKind::Consume { target: source }),
@@ -99,6 +128,16 @@ pub(crate) fn tick(item: &mut Item, source: ItemRef, health: u16, max_health: u1
                 EffectKind::Heal {
                     target: source.side,
                     amount: 15,
+                },
+            ),
+            Effect::new(source, EffectKind::Consume { target: source }),
+        ],
+        ItemState::MedicBag if health.saturating_mul(2) <= max_health => vec![
+            Effect::new(
+                source,
+                EffectKind::Heal {
+                    target: source.side,
+                    amount: 30,
                 },
             ),
             Effect::new(source, EffectKind::Consume { target: source }),
@@ -136,6 +175,22 @@ pub(crate) fn tick(item: &mut Item, source: ItemRef, health: u16, max_health: u1
         | ItemState::BearTrap
         | ItemState::SignalDrum
         | ItemState::FieldKit
-        | ItemState::BarricadeKit => Vec::new(),
+        | ItemState::BarricadeKit
+        | ItemState::Katana
+        | ItemState::ThrowingAxe
+        | ItemState::MorningStar
+        | ItemState::Chainmail
+        | ItemState::Bulwark
+        | ItemState::VenomFang
+        | ItemState::Spellbook { .. }
+        | ItemState::VampiricBlade
+        | ItemState::PlagueCenser
+        | ItemState::Bola
+        | ItemState::Grenade
+        | ItemState::HarpoonGun { .. }
+        | ItemState::Grindstone
+        | ItemState::Metronome
+        | ItemState::RallyingHorn
+        | ItemState::MedicBag => Vec::new(),
     }
 }

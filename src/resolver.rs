@@ -117,6 +117,24 @@ impl Combat {
                 });
                 Vec::new()
             }
+            EffectKind::ApplyPoison { target, stacks } => {
+                let hero = self.hero_mut(target);
+                hero.poison = hero.poison.saturating_add(stacks);
+                events.push(BattleEvent::Poisoned {
+                    target,
+                    stacks: hero.poison,
+                });
+                Vec::new()
+            }
+            EffectKind::CleansePoison { target, amount } => {
+                let hero = self.hero_mut(target);
+                hero.poison = hero.poison.saturating_sub(amount);
+                events.push(BattleEvent::PoisonCleansed {
+                    target,
+                    remaining: hero.poison,
+                });
+                Vec::new()
+            }
         }
     }
 

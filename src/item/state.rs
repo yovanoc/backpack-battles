@@ -36,6 +36,22 @@ pub(crate) enum ItemState {
     SignalDrum,
     FieldKit,
     BarricadeKit,
+    Katana,
+    ThrowingAxe,
+    MorningStar,
+    Chainmail,
+    Bulwark,
+    VenomFang,
+    Spellbook { damage: u16 },
+    VampiricBlade,
+    PlagueCenser,
+    Bola,
+    Grenade,
+    HarpoonGun { uses_left: u8 },
+    Grindstone,
+    Metronome,
+    MedicBag,
+    RallyingHorn,
 }
 
 impl ItemState {
@@ -75,6 +91,22 @@ impl ItemState {
             ItemKind::SignalDrum => Self::SignalDrum,
             ItemKind::FieldKit => Self::FieldKit,
             ItemKind::BarricadeKit => Self::BarricadeKit,
+            ItemKind::Katana => Self::Katana,
+            ItemKind::ThrowingAxe => Self::ThrowingAxe,
+            ItemKind::MorningStar => Self::MorningStar,
+            ItemKind::Chainmail => Self::Chainmail,
+            ItemKind::Bulwark => Self::Bulwark,
+            ItemKind::VenomFang => Self::VenomFang,
+            ItemKind::Spellbook => Self::Spellbook { damage: 6 },
+            ItemKind::VampiricBlade => Self::VampiricBlade,
+            ItemKind::PlagueCenser => Self::PlagueCenser,
+            ItemKind::Bola => Self::Bola,
+            ItemKind::Grenade => Self::Grenade,
+            ItemKind::HarpoonGun => Self::HarpoonGun { uses_left: 3 },
+            ItemKind::Grindstone => Self::Grindstone,
+            ItemKind::Metronome => Self::Metronome,
+            ItemKind::MedicBag => Self::MedicBag,
+            ItemKind::RallyingHorn => Self::RallyingHorn,
         }
     }
 
@@ -114,12 +146,29 @@ impl ItemState {
             Self::SignalDrum => ItemKind::SignalDrum,
             Self::FieldKit => ItemKind::FieldKit,
             Self::BarricadeKit => ItemKind::BarricadeKit,
+            Self::Katana => ItemKind::Katana,
+            Self::ThrowingAxe => ItemKind::ThrowingAxe,
+            Self::MorningStar => ItemKind::MorningStar,
+            Self::Chainmail => ItemKind::Chainmail,
+            Self::Bulwark => ItemKind::Bulwark,
+            Self::VenomFang => ItemKind::VenomFang,
+            Self::Spellbook { .. } => ItemKind::Spellbook,
+            Self::VampiricBlade => ItemKind::VampiricBlade,
+            Self::PlagueCenser => ItemKind::PlagueCenser,
+            Self::Bola => ItemKind::Bola,
+            Self::Grenade => ItemKind::Grenade,
+            Self::HarpoonGun { .. } => ItemKind::HarpoonGun,
+            Self::Grindstone => ItemKind::Grindstone,
+            Self::Metronome => ItemKind::Metronome,
+            Self::MedicBag => ItemKind::MedicBag,
+            Self::RallyingHorn => ItemKind::RallyingHorn,
         }
     }
 
     pub(super) const fn can_activate_again(&self) -> bool {
         match self {
             Self::GrapplingHook { uses_left } => *uses_left > 0,
+            Self::HarpoonGun { uses_left } => *uses_left > 0,
             Self::WoodenSword
             | Self::Crossbow
             | Self::Hourglass
@@ -139,7 +188,17 @@ impl ItemState {
             | Self::BloodChalice
             | Self::ShrapnelMine
             | Self::BearTrap
-            | Self::SignalDrum => true,
+            | Self::SignalDrum
+            | Self::Katana
+            | Self::ThrowingAxe
+            | Self::MorningStar
+            | Self::Bulwark
+            | Self::VenomFang
+            | Self::Spellbook { .. }
+            | Self::VampiricBlade
+            | Self::PlagueCenser
+            | Self::Grenade
+            | Self::Metronome => true,
             Self::Whetstone
             | Self::LooseBuckler
             | Self::Armor
@@ -152,7 +211,12 @@ impl ItemState {
             | Self::Pavise
             | Self::Tripwire
             | Self::FieldKit
-            | Self::BarricadeKit => false,
+            | Self::BarricadeKit
+            | Self::Chainmail
+            | Self::Bola
+            | Self::Grindstone
+            | Self::MedicBag
+            | Self::RallyingHorn => false,
         }
     }
 }

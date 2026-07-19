@@ -178,6 +178,21 @@ fn event_line(event: &BattleEvent) -> Line<'static> {
             format!("{} consumes {}", item.side.name(), kind.name()),
             MUTED,
         ),
+        BattleEvent::Poisoned { target, stacks } => (
+            "☠",
+            format!("{} poisoned to {stacks} stacks", target.name()),
+            PURPLE,
+        ),
+        BattleEvent::PoisonDamage { target, amount } => (
+            "☠",
+            format!("{} takes {amount} poison", target.name()),
+            PURPLE,
+        ),
+        BattleEvent::PoisonCleansed { target, remaining } => (
+            "✦",
+            format!("{} cleanses poison to {remaining}", target.name()),
+            GREEN,
+        ),
     };
     Line::from(vec![
         Span::styled("   ", Style::new()),

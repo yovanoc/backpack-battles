@@ -1,13 +1,13 @@
 use backpack_battles::*;
 
 #[test]
-fn loose_buckler_adds_thirty_max_health() {
+fn loose_buckler_adds_twenty_max_health() {
     // Given / When
     let hero = hero("left", 100, vec![item(ItemKind::LooseBuckler, 0, 0)]);
 
     // Then
-    assert_eq!(hero.health(), 130);
-    assert_eq!(hero.max_health(), 130);
+    assert_eq!(hero.health(), 120);
+    assert_eq!(hero.max_health(), 120);
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn buckler_effect_is_removed_on_the_tick_it_falls() {
     });
     assert!(damage_index.is_some() && fell_index.is_some());
     assert!(damage_index.unwrap() < fell_index.unwrap());
-    // Right opens 60/60 (30 base + 30 buckler) with DEFENDER_GUARD; the hit is
+    // Right opens 50/50 (30 base + 20 buckler) with DEFENDER_GUARD; the hit is
     assert_eq!(report.right_health, 30);
 }
 

@@ -160,6 +160,24 @@ impl Combat {
         }
     }
 
+    /// Apply `side`'s standing poison at the top of its rank: raw self-damage
+    /// equal to the stack count (ignores armor and block), then one stack
+    /// decays. Returns whether it ended the battle.
+    pub(crate) fn resolve_poison(&mut self, side: Side, events: &mut Vec<BattleEvent>) -> bool {
+        let hero = self.hero_mut(side);
+        if hero.poison == 0 {
+            return false;
+        }
+        let amount = hero.health.min(hero.poison);
+        hero.health -= amount;
+        hero.poison -= 1;
+        events.push(BattleEvent::PoisonDamage {
+            target: side,
+            amount,
+        });
+        self.is_finished()
+    }
+
     /// Resolve one 50ms rank for `side` at authored `tick`: that side's due
     /// natural falls, per-tick behavior, one charge advance, then its ready
     /// activations in anchored ItemId order. Stops the moment either hero dies
@@ -173,6 +191,12 @@ impl Combat {
         events: &mut Vec<BattleEvent>,
         scratch: &mut Vec<ItemRef>,
     ) -> RankOutcome {
+        if self.resolve_poison(side, events) {
+            return RankOutcome {
+                activated: false,
+                ended: true,
+            };
+        }
         self.resolve_natural_falls(side, tick, events, scratch);
         if self.is_finished() {
             return RankOutcome {

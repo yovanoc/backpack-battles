@@ -39,6 +39,22 @@ pub enum ItemKind {
     SignalDrum,
     FieldKit,
     BarricadeKit,
+    Katana,
+    ThrowingAxe,
+    MorningStar,
+    Chainmail,
+    Bulwark,
+    VenomFang,
+    Spellbook,
+    VampiricBlade,
+    PlagueCenser,
+    Bola,
+    Grenade,
+    HarpoonGun,
+    Grindstone,
+    Metronome,
+    MedicBag,
+    RallyingHorn,
 }
 
 impl ItemKind {
@@ -58,7 +74,10 @@ impl ItemKind {
             | Self::Spear
             | Self::Dagger
             | Self::Rapier
-            | Self::Warhammer => Archetype::Aggression,
+            | Self::Warhammer
+            | Self::Katana
+            | Self::ThrowingAxe
+            | Self::MorningStar => Archetype::Aggression,
             Self::LooseBuckler
             | Self::Armor
             | Self::Shield
@@ -66,26 +85,39 @@ impl ItemKind {
             | Self::HealingPotion
             | Self::Thornmail
             | Self::SpikedTarge
-            | Self::Pavise => Archetype::Defense,
+            | Self::Pavise
+            | Self::Chainmail
+            | Self::Bulwark => Archetype::Defense,
             Self::Hourglass
             | Self::Leech
             | Self::Grimoire
             | Self::PoisonVial
             | Self::DoomCandle
-            | Self::BloodChalice => Archetype::Scaling,
+            | Self::BloodChalice
+            | Self::VenomFang
+            | Self::Spellbook
+            | Self::VampiricBlade
+            | Self::PlagueCenser => Archetype::Scaling,
             Self::GrapplingHook
             | Self::Net
             | Self::Bomb
             | Self::Caltrops
             | Self::Tripwire
             | Self::ShrapnelMine
-            | Self::BearTrap => Archetype::Control,
+            | Self::BearTrap
+            | Self::Bola
+            | Self::Grenade
+            | Self::HarpoonGun => Archetype::Control,
             Self::Whetstone
             | Self::Strap
             | Self::WarBanner
             | Self::SignalDrum
             | Self::FieldKit
-            | Self::BarricadeKit => Archetype::Support,
+            | Self::BarricadeKit
+            | Self::Grindstone
+            | Self::Metronome
+            | Self::MedicBag
+            | Self::RallyingHorn => Archetype::Support,
         }
     }
 
@@ -136,12 +168,12 @@ impl ItemKind {
             Self::Whetstone => Definition::new("Whetstone", &ONE).adjacent_damage(2),
             Self::Hourglass => Definition::new("Hourglass", &ONE).activation(20, 20),
             Self::LooseBuckler => Definition::new("Loose Buckler", &SQUARE)
-                .armor(2)
-                .max_health(30)
+                .armor(1)
+                .max_health(20)
                 .natural_fall(20, 8),
             Self::Armor => Definition::new("Armor", &SQUARE)
-                .armor(2)
-                .max_health(40)
+                .armor(1)
+                .max_health(28)
                 .weight(10)
                 .fixed(),
             Self::Shield => Definition::new("Shield", &VERTICAL_TWO).activation(25, 25),
@@ -185,7 +217,7 @@ impl ItemKind {
                 .retaliation(1),
             Self::Pavise => Definition::new("Pavise", &LINE_THREE)
                 .armor(1)
-                .max_health(24)
+                .max_health(16)
                 .weight(8)
                 .fixed(),
             Self::DoomCandle => Definition::new("Doom Candle", &ONE).activation(45, 20),
@@ -200,12 +232,46 @@ impl ItemKind {
             Self::SignalDrum => Definition::new("Signal Drum", &VERTICAL_TWO).activation(15, 30),
             Self::FieldKit => Definition::new("Field Kit", &ONE),
             Self::BarricadeKit => Definition::new("Barricade Kit", &HORIZONTAL_TWO),
+            Self::Katana => Definition::new("Katana", &VERTICAL_TWO)
+                .activation(22, 22)
+                .weapon(4),
+            Self::ThrowingAxe => Definition::new("Throwing Axe", &HORIZONTAL_TWO)
+                .activation(18, 36)
+                .weapon(3),
+            Self::MorningStar => Definition::new("Morning Star", &L_TROMINO)
+                .activation(34, 34)
+                .weapon(6),
+            Self::Chainmail => Definition::new("Chainmail", &SQUARE)
+                .armor(3)
+                .max_health(14)
+                .weight(9)
+                .fixed(),
+            Self::Bulwark => Definition::new("Bulwark", &VERTICAL_TWO).activation(30, 30),
+            Self::VenomFang => Definition::new("Venom Fang", &ONE).activation(12, 12),
+            Self::Spellbook => Definition::new("Spellbook", &VERTICAL_TWO)
+                .activation(28, 40)
+                .fixed(),
+            Self::VampiricBlade => {
+                Definition::new("Vampiric Blade", &VERTICAL_TWO).activation(22, 22)
+            }
+            Self::PlagueCenser => {
+                Definition::new("Plague Censer", &HORIZONTAL_TWO).activation(24, 24)
+            }
+            Self::Bola => Definition::new("Bola", &ONE),
+            Self::Grenade => Definition::new("Grenade", &HORIZONTAL_TWO).activation(25, 25),
+            Self::HarpoonGun => Definition::new("Harpoon Gun", &VERTICAL_TWO).activation(45, 45),
+            Self::Grindstone => Definition::new("Grindstone", &ONE).adjacent_damage(4),
+            Self::Metronome => Definition::new("Metronome", &ONE).activation(20, 20),
+            Self::MedicBag => Definition::new("Medic Bag", &HORIZONTAL_TWO),
+            Self::RallyingHorn => Definition::new("Rallying Horn", &VERTICAL_TWO)
+                .adjacent_damage(4)
+                .max_health(8),
         }
     }
 }
 
 impl ItemKind {
-    pub const ALL: [Self; 34] = [
+    pub const ALL: [Self; 50] = [
         Self::WoodenSword,
         Self::Crossbow,
         Self::Whetstone,
@@ -240,6 +306,22 @@ impl ItemKind {
         Self::SignalDrum,
         Self::FieldKit,
         Self::BarricadeKit,
+        Self::Katana,
+        Self::ThrowingAxe,
+        Self::MorningStar,
+        Self::Chainmail,
+        Self::Bulwark,
+        Self::VenomFang,
+        Self::Spellbook,
+        Self::VampiricBlade,
+        Self::PlagueCenser,
+        Self::Bola,
+        Self::Grenade,
+        Self::HarpoonGun,
+        Self::Grindstone,
+        Self::Metronome,
+        Self::MedicBag,
+        Self::RallyingHorn,
     ];
     pub const COUNT: usize = Self::ALL.len();
 }
