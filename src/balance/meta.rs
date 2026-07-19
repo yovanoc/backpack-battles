@@ -227,13 +227,32 @@ impl VerdictReport {
 /// grade the counter-graph against the exported thresholds. Same seed always
 /// produces the same verdict.
 pub fn run_verdict(config: &MetaConfig) -> VerdictReport {
-    let (candidates, elite, _fitness, _panel) = draft_and_rank(config);
-    let elite_bags: Vec<&Bag> = elite.iter().map(|&index| &candidates[index]).collect();
+    // Pool the evolved elite of several independent coevolution runs, so an
+    // item counts as dead only if it is absent from every run's elite and
+    // oppressive only if it dominates across them (the design doc's merged-run
+    // methodology, robust to a single run's incidental gaps).
+    const VERDICT_RUNS: u64 = 3;
+    let mut pooled: Vec<Bag> = Vec::new();
+    for run in 0..VERDICT_RUNS {
+        let mut run_config = *config;
+        run_config.seed = config.seed.wrapping_add(run);
+        let (candidates, elite, _fitness, _panel) = draft_and_rank(&run_config);
+        for &index in &elite {
+            pooled.push(candidates[index].clone());
+        }
+    }
+    let elite_bags: Vec<&Bag> = pooled.iter().collect();
     let n = elite_bags.len();
     let beat = beat_matrix(config, &elite_bags);
 
     // best_counter[i] = how hard the strongest other bag beats bag i.
+    // best_prey[i]    = how hard bag i beats its own best target.
+    // A bag hard-countered (>85%) is fine if it also hard-counters something -
+    // that is a legit rock-paper-scissors piece. Only a bag hard-countered with
+    // NO hard prey of its own is an "execution": beaten with no counterplay
+    // (the design doc's contre-execution sans defense intermediaire).
     let mut best_counter = vec![0.0_f64; n];
+    let mut best_prey = vec![0.0_f64; n];
     let mut counter_of = vec![0_usize; n];
     for i in 0..n {
         let mut best = 0.0_f64;
@@ -246,6 +265,12 @@ pub fn run_verdict(config: &MetaConfig) -> VerdictReport {
         }
         best_counter[i] = best;
         counter_of[i] = best_j;
+        best_prey[i] = beat[i]
+            .iter()
+            .enumerate()
+            .filter(|(j, _)| *j != i)
+            .map(|(_, value)| *value)
+            .fold(0.0_f64, f64::max);
     }
 
     let bags_without_counter = best_counter
@@ -254,9 +279,10 @@ pub fn run_verdict(config: &MetaConfig) -> VerdictReport {
         .count();
     let min_best_counter = best_counter.iter().copied().fold(1.0_f64, f64::min);
     let max_best_counter = best_counter.iter().copied().fold(0.0_f64, f64::max);
-    let executions = best_counter
-        .iter()
-        .filter(|&&c| c > CONTESTED_MAX_COUNTER)
+    let executions = (0..n)
+        .filter(|&i| {
+            best_counter[i] > CONTESTED_MAX_COUNTER && best_prey[i] <= CONTESTED_MAX_COUNTER
+        })
         .count();
 
     let mut distances: Vec<f64> = (0..n)
