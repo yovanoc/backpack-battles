@@ -93,6 +93,23 @@ impl Item {
         *charge = charge.saturating_sub(speed);
     }
 
+    pub(crate) const fn charge(&self) -> Option<u32> {
+        self.charge_remaining
+    }
+
+    /// Advance (positive ticks) or delay (negative ticks) the next activation.
+    /// Advancing floors at ready; delaying caps at one full cadence so repeated
+    /// Control shifts cannot lock an item forever.
+    pub(crate) fn shift_charge(&mut self, ticks: i16) {
+        let Some(charge) = self.charge_remaining else {
+            return;
+        };
+        let cap = self.charge_period.unwrap_or(charge);
+        let delta = i64::from(ticks) * 10_000;
+        let shifted = (i64::from(charge) - delta).clamp(0, i64::from(cap));
+        self.charge_remaining = Some(shifted as u32);
+    }
+
     pub(crate) fn schedule_next(&mut self) {
         let Some(timing) = self.kind().activation() else {
             self.charge_remaining = None;

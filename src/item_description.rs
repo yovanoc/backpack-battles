@@ -34,7 +34,7 @@ impl ItemKind {
             Self::Spear => "16 normal damage",
             Self::WarBanner => "+10 health; adjacent weapons +7 damage",
             Self::Bomb => "10 piercing damage, then 1/2 drop lightest edge weapon; consumed",
-            Self::Caltrops => "drop lightest edge item",
+            Self::Caltrops => "2 normal damage; delay enemy's next activation by 6 ticks",
             Self::Thornmail => "+1 armor; retaliate for 3 damage",
             Self::Dagger => "4 normal damage",
             Self::Warhammer => "18 normal damage; cannot fall",

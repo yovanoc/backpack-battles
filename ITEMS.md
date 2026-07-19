@@ -69,7 +69,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Grappling Hook | 1×2 | 1 | 60/60 | force lightest edge item to fall; 2 uses |
 | Weighted Net | 1×1 | 1 | — | force lightest edge weapon to fall at battle start |
 | Bomb | 2×1 | 1 | 30/30 | 10 piercing damage, then 1/2 drop lightest edge weapon; consumed |
-| Caltrops | 3×1 | 1 | 30/30 | drop lightest edge item |
+| Caltrops | 3×1 | 1 | 30/30 | 2 normal damage; delay enemy's next activation by 6 ticks |
 | Tripwire | 1×1 | 1 | — | 1/2 drop lightest edge item at battle start; consumed |
 | Shrapnel Mine | 2×1 | 1 | 20/20 | 10 piercing damage, then 1/3 drop lightest edge weapon; consumed |
 | Bear Trap | L(3) | 1 | 24/35 | 12 piercing damage, then drop lightest edge item; consumed |

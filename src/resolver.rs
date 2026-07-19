@@ -124,7 +124,23 @@ impl Combat {
                     target,
                     stacks: hero.poison,
                 });
-                Vec::new()
+                // Defense's charter: attrition, not survival. Retaliators punish
+                // the poisoner once per application, giving Defense a real answer
+                // to Scaling's armor-and-block-ignoring poison.
+                self.hero(target)
+                    .bag
+                    .retaliators()
+                    .map(|(id, amount)| {
+                        Effect::new(
+                            ItemRef { side: target, id },
+                            EffectKind::Damage {
+                                target: target.opponent(),
+                                amount,
+                                mode: DamageMode::Retaliation,
+                            },
+                        )
+                    })
+                    .collect()
             }
             EffectKind::CleansePoison { target, amount } => {
                 let hero = self.hero_mut(target);
@@ -133,6 +149,14 @@ impl Combat {
                     target,
                     remaining: hero.poison,
                 });
+                Vec::new()
+            }
+            EffectKind::ShiftCharge { target, ticks } => {
+                for item_ref in self.targets(target) {
+                    if let Some(item) = self.item_mut(item_ref) {
+                        item.shift_charge(ticks);
+                    }
+                }
                 Vec::new()
             }
         }
@@ -254,6 +278,20 @@ impl Combat {
                 .bag
                 .lightest_edge(weapons_only)
                 .map(|id| vec![ItemRef { side, id }])
+                .unwrap_or_default(),
+            ItemTarget::SoonestActivation { side } => self
+                .hero(side)
+                .bag
+                .items()
+                .iter()
+                .filter(|item| item.charge().is_some())
+                .min_by_key(|item| (item.charge().unwrap_or(u32::MAX), item.id()))
+                .map(|item| {
+                    vec![ItemRef {
+                        side,
+                        id: item.id(),
+                    }]
+                })
                 .unwrap_or_default(),
         }
     }

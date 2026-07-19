@@ -169,17 +169,18 @@ pub(crate) fn activate(item: &mut Item, source: ItemRef) -> Vec<Effect> {
             ),
             Effect::new(source, EffectKind::Consume { target: source }),
         ],
-        ItemState::Caltrops => vec![Effect::new(
-            source,
-            EffectKind::AttemptFall {
-                target: ItemTarget::LightestEdge {
-                    side: source.side.opponent(),
-                    weapons_only: false,
+        ItemState::Caltrops => vec![
+            damage(source, 2, DamageMode::Normal),
+            Effect::new(
+                source,
+                EffectKind::ShiftCharge {
+                    target: ItemTarget::SoonestActivation {
+                        side: source.side.opponent(),
+                    },
+                    ticks: -6,
                 },
-                cause: FallCause::Forced { source },
-                chance: None,
-            },
-        )],
+            ),
+        ],
         ItemState::Katana => vec![damage(source, 9, DamageMode::Normal)],
         ItemState::ThrowingAxe => vec![damage(source, 11, DamageMode::Piercing)],
         ItemState::MorningStar => vec![damage(source, 14, DamageMode::Normal)],

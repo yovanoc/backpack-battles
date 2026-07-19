@@ -52,10 +52,15 @@ pub(crate) enum EffectKind {
         target: Side,
         amount: u16,
     },
+    ShiftCharge {
+        target: ItemTarget,
+        ticks: i16,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ItemTarget {
     Adjacent(ItemRef),
     LightestEdge { side: Side, weapons_only: bool },
+    SoonestActivation { side: Side },
 }
