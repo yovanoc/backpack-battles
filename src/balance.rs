@@ -11,8 +11,8 @@ use classification::dominant_archetype;
 pub(crate) use generator::random_bag;
 pub use meta::{
     CONTESTED_MAX_COUNTER, CYCLE_EDGE_WINRATE, CYCLE_MIN_SCC, ItemPresence, MetaConfig, MetaReport,
-    NO_WELL_MIN_COUNTER, ROSTER_MAX_PRESENCE, SUBSTANTIAL_MIN_DISTANCE, VerdictReport, run_meta,
-    run_verdict,
+    NO_WELL_MIN_COUNTER, ROSTER_MAX_PRESENCE, SUBSTANTIAL_MIN_DISTANCE, TournamentReport,
+    VerdictReport, run_meta, run_tournament, run_verdict,
 };
 pub use stat::{BalanceReport, ItemStat, MatchupStat};
 

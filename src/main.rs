@@ -9,6 +9,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 mod balance_command;
 mod catalog_command;
 mod meta_command;
+mod tournament_command;
 mod verdict_command;
 mod watch;
 
@@ -123,6 +124,25 @@ enum Commands {
         #[arg(long)]
         no_rotate: bool,
     },
+    /// Large Swiss tournament (millions of fights): entrants brawl, the fittest
+    /// breed, repeat - surfaces the champion bag and what the winners run.
+    /// --candidates entrants, --panel rounds/generation, --elite finalists.
+    Tournament {
+        #[arg(long, default_value_t = 20000)]
+        candidates: u64,
+        #[arg(long, default_value_t = 30)]
+        panel: u64,
+        #[arg(long, default_value_t = 40)]
+        elite: usize,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long, default_value_t = 2000, value_parser = clap::value_parser!(u16).range(1..=2000))]
+        ticks: u16,
+        #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
+        health: u16,
+        #[arg(long)]
+        no_rotate: bool,
+    },
 }
 
 fn main() -> ExitCode {
@@ -173,6 +193,23 @@ fn main() -> ExitCode {
             health,
             no_rotate,
         } => verdict_command::run(MetaConfig {
+            candidates,
+            panel,
+            seed,
+            tick_limit: ticks,
+            hero_health: health,
+            allow_rotation: !no_rotate,
+            elite_size: elite,
+        }),
+        Commands::Tournament {
+            candidates,
+            panel,
+            elite,
+            seed,
+            ticks,
+            health,
+            no_rotate,
+        } => tournament_command::run(MetaConfig {
             candidates,
             panel,
             seed,

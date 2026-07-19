@@ -547,3 +547,146 @@ fn scc_sizes(n: usize, adjacency: &[Vec<usize>]) -> Vec<usize> {
     }
     sizes
 }
+
+// ---------------------------------------------------------------------------
+// Tournament: large-scale Swiss selection. Cheaper than all-vs-all coevolution
+// (O(pop * rounds) not O(pop^2)), so it scales to a huge pool and millions of
+// fights, hammering out the true champion bag and what the winners actually run.
+// ---------------------------------------------------------------------------
+
+const TOURNAMENT_GENERATIONS: u64 = 8;
+
+pub struct TournamentReport {
+    pub entrants: u64,
+    pub rounds: u64,
+    pub generations: u64,
+    pub fights: u64,
+    pub finalists: usize,
+    pub champion_wins: u64,
+    pub champion: Vec<ItemKind>,
+    pub archetype_share: [f64; Archetype::COUNT],
+    pub presence: Vec<ItemPresence>,
+}
+
+pub fn run_tournament(config: &MetaConfig) -> TournamentReport {
+    let mut rng = Rng::new(config.seed);
+    let pop_size = (config.candidates as usize).max(4);
+    let rounds = config.panel.max(1);
+    let mut population: Vec<Bag> = (0..pop_size)
+        .map(|_| random_bag(&mut rng, config.allow_rotation))
+        .collect();
+    let mut wins = vec![0_u64; pop_size];
+    for generation in 0..TOURNAMENT_GENERATIONS {
+        wins = swiss_wins(config, &population, rounds, generation);
+        if generation + 1 == TOURNAMENT_GENERATIONS {
+            break;
+        }
+        // Keep the fittest half, refill by mutating survivors, run again.
+        let mut order: Vec<usize> = (0..population.len()).collect();
+        order.sort_by(|&a, &b| wins[b].cmp(&wins[a]).then(a.cmp(&b)));
+        let keep = (population.len() / 2).max(1);
+        let survivors: Vec<Bag> = order[..keep]
+            .iter()
+            .map(|&i| population[i].clone())
+            .collect();
+        let mut next = survivors.clone();
+        while next.len() < population.len() {
+            let parent =
+                &survivors[usize::try_from(rng.below(survivors.len() as u64)).unwrap_or(0)];
+            next.push(super::generator::mutate(
+                parent,
+                &mut rng,
+                config.allow_rotation,
+            ));
+        }
+        population = next;
+    }
+
+    let mut order: Vec<usize> = (0..population.len()).collect();
+    order.sort_by(|&a, &b| wins[b].cmp(&wins[a]).then(a.cmp(&b)));
+    let finalists = config.elite_size.min(order.len());
+    let champion: Vec<ItemKind> = population[order[0]]
+        .items()
+        .iter()
+        .map(|item| item.kind())
+        .collect();
+
+    let mut counts = [0_u64; ItemKind::COUNT];
+    let mut arch_cells = [0_u64; Archetype::COUNT];
+    let mut total_cells = 0_u64;
+    for &index in &order[..finalists] {
+        let mut seen = [false; ItemKind::COUNT];
+        for item in population[index].items() {
+            seen[item.kind() as usize] = true;
+            let cells = item.shape().len() as u64;
+            arch_cells[item.kind().archetype() as usize] += cells;
+            total_cells += cells;
+        }
+        for (kind_index, present) in seen.iter().enumerate() {
+            if *present {
+                counts[kind_index] += 1;
+            }
+        }
+    }
+    let divisor = finalists.max(1) as f64;
+    let mut presence: Vec<ItemPresence> = ItemKind::ALL
+        .iter()
+        .map(|kind| ItemPresence {
+            kind: *kind,
+            presence: counts[*kind as usize] as f64 / divisor,
+            elite_count: counts[*kind as usize],
+        })
+        .collect();
+    presence.sort_by(|a, b| {
+        b.presence
+            .total_cmp(&a.presence)
+            .then((a.kind as usize).cmp(&(b.kind as usize)))
+    });
+    let mut archetype_share = [0.0_f64; Archetype::COUNT];
+    if total_cells > 0 {
+        for (share, cells) in archetype_share.iter_mut().zip(arch_cells) {
+            *share = cells as f64 / total_cells as f64;
+        }
+    }
+
+    TournamentReport {
+        entrants: pop_size as u64,
+        rounds,
+        generations: TOURNAMENT_GENERATIONS,
+        fights: pop_size as u64 / 2 * rounds * TOURNAMENT_GENERATIONS,
+        finalists,
+        champion_wins: wins[order[0]],
+        champion,
+        archetype_share,
+        presence,
+    }
+}
+
+/// One generation of Swiss: `rounds` rounds where each round pairs bags of
+/// similar standing and the winner of each fight scores a point.
+fn swiss_wins(config: &MetaConfig, population: &[Bag], rounds: u64, generation: u64) -> Vec<u64> {
+    let mut score = vec![0_u64; population.len()];
+    for round in 0..rounds {
+        let mut order: Vec<usize> = (0..population.len()).collect();
+        order.sort_by(|&a, &b| score[b].cmp(&score[a]).then(a.cmp(&b)));
+        let base = config
+            .seed
+            .wrapping_add(generation.wrapping_mul(7919))
+            .wrapping_add(round.wrapping_mul(31));
+        for pair in order.chunks(2) {
+            if let [i, j] = *pair {
+                match duel(
+                    config,
+                    &population[i],
+                    &population[j],
+                    seed_for(base, i, j, 0),
+                ) {
+                    Outcome::LeftWins => score[i] += 1,
+                    Outcome::RightWins => score[j] += 1,
+                    Outcome::Draw => {}
+                }
+            }
+        }
+    }
+    score
+}
