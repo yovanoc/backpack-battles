@@ -158,7 +158,10 @@ pub fn demo_heroes(seed: u64) -> (Hero, Hero) {
     let mut rng = Rng::new(seed);
     let left = random_bag(&mut rng, true);
     let right = random_bag(&mut rng, true);
-    (Hero::new("Ada", 100, left), Hero::new("Turing", 100, right))
+    (
+        Hero::new("Ada", crate::BASE_HEALTH, left),
+        Hero::new("Turing", crate::BASE_HEALTH, right),
+    )
 }
 
 fn battle_result(left: &Hero, right: &Hero, ticks: u16) -> BattleResult {

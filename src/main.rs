@@ -65,7 +65,7 @@ enum Commands {
         #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
         ticks: u16,
         /// Base health each generated hero starts with.
-        #[arg(long, default_value_t = 100)]
+        #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
         health: u16,
         /// Place every item upright instead of using random rotations.
         #[arg(long)]
@@ -99,7 +99,7 @@ enum Commands {
         seed: u64,
         #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
         ticks: u16,
-        #[arg(long, default_value_t = 100)]
+        #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
         health: u16,
         #[arg(long)]
         no_rotate: bool,
@@ -118,7 +118,7 @@ enum Commands {
         seed: u64,
         #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
         ticks: u16,
-        #[arg(long, default_value_t = 100)]
+        #[arg(long, default_value_t = backpack_battles::BASE_HEALTH)]
         health: u16,
         #[arg(long)]
         no_rotate: bool,

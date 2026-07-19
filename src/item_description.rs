@@ -21,7 +21,7 @@ impl ItemKind {
             Self::Crossbow => "10 normal damage",
             Self::Whetstone => "adjacent weapons +2 damage",
             Self::Hourglass => "adjacent items +400 speed bps",
-            Self::LooseBuckler => "+28 health, +2 armor; 1/8 fall every 20 ticks",
+            Self::LooseBuckler => "+42 health, +2 armor; 1/8 fall every 20 ticks",
             Self::Armor => "+28 health, +1 armor; cannot fall",
             Self::Shield => "+6 block, maximum 20; cleanse 3 poison",
             Self::Cactus => "retaliate for 2 damage when hit",

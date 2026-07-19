@@ -36,7 +36,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 
 | Item | Shape | Wt | Act | Armor | HP | Retal | Fall | Effect |
 |---|---|---|---|---|---|---|---|---|
-| Loose Buckler | 2×2 | 1 | — | 2 | 28 | — | 1-in-8 every 20 | +28 health, +2 armor |
+| Loose Buckler | 2×2 | 1 | — | 2 | 42 | — | 1-in-8 every 20 | +42 health, +2 armor |
 | Armor | 2×2 | 10 | — | 1 | 28 | — | fixed | +28 health, +1 armor; cannot fall |
 | Shield | 1×2 | 1 | 25/25 | — | — | — | — | +6 block, maximum 20; cleanse 3 poison |
 | Potted Cactus | 1×1 | 1 | — | — | — | 2 | — | retaliate for 2 damage when hit |
@@ -52,7 +52,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Item | Shape | Wt | Act | Fall | Effect |
 |---|---|---|---|---|---|
 | Hourglass | 1×1 | 1 | 20/20 | — | adjacent items +400 speed bps |
-| Leech | 1×1 | 1 | 10/10 | — | drain 1 health and heal 1 |
+| Leech | 1×1 | 1 | 14/14 | — | drain 1 health and heal 1 |
 | Grimoire | 2×2 | 10 | 30/43 | fixed | 10 normal damage, +5 each activation; cannot fall |
 | Poison Vial | 1×1 | 1 | 15/15 | — | enemy loses 2 health |
 | Doom Candle | 1×1 | 1 | 45/20 | — | enemy loses 3 health |

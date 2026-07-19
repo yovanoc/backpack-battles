@@ -169,7 +169,7 @@ impl ItemKind {
             Self::Hourglass => Definition::new("Hourglass", &ONE).activation(20, 20),
             Self::LooseBuckler => Definition::new("Loose Buckler", &SQUARE)
                 .armor(2)
-                .max_health(28)
+                .max_health(42)
                 .natural_fall(20, 8),
             Self::Armor => Definition::new("Armor", &SQUARE)
                 .armor(1)
@@ -178,7 +178,7 @@ impl ItemKind {
                 .fixed(),
             Self::Shield => Definition::new("Shield", &VERTICAL_TWO).activation(25, 25),
             Self::Cactus => Definition::new("Potted Cactus", &ONE).retaliation(2),
-            Self::Leech => Definition::new("Leech", &ONE).activation(10, 10),
+            Self::Leech => Definition::new("Leech", &ONE).activation(14, 14),
             Self::HealingPotion => Definition::new("Healing Potion", &ONE),
             Self::GrapplingHook => {
                 Definition::new("Grappling Hook", &VERTICAL_TWO).activation(60, 60)

@@ -4,6 +4,13 @@ use crate::{
     BattleEvent, Combat, DamageMode, Effect, EffectKind, FallCause, ItemRef, ItemTarget, Side,
 };
 
+/// A hero at or below this percentage of max health is in "last stand": it
+/// takes reduced weapon damage, compressing blowouts into closer fights and
+/// opening comeback windows. Raw poison and health-loss ignore it by design.
+const RALLY_THRESHOLD_PCT: u32 = 30;
+/// Fraction (1/N) of weapon damage shrugged off while in last stand.
+const RALLY_MITIGATION_DIVISOR: u16 = 3;
+
 impl Combat {
     pub(crate) fn resolve_effects(&mut self, effects: Vec<Effect>, events: &mut Vec<BattleEvent>) {
         let mut queue = VecDeque::from(effects);
@@ -181,6 +188,7 @@ impl Combat {
             .amount
             .saturating_add(adjacent_bonus)
             .saturating_sub(armor);
+        let max_health = self.hero(damage.target).max_health();
         let hero = self.hero_mut(damage.target);
         let blocked = match damage.mode {
             DamageMode::Retaliation => 0,
@@ -193,7 +201,14 @@ impl Combat {
                 block: hero.block,
             });
         }
-        let lost = hero.health.min(after_armor - blocked);
+        let raw = after_armor - blocked;
+        let incoming =
+            if u32::from(hero.health) * 100 <= u32::from(max_health) * RALLY_THRESHOLD_PCT {
+                raw.saturating_sub(raw / RALLY_MITIGATION_DIVISOR)
+            } else {
+                raw
+            };
+        let lost = hero.health.min(incoming);
         hero.health -= lost;
         events.push(BattleEvent::DamageDealt {
             source,

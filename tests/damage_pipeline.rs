@@ -82,11 +82,11 @@ fn direct_health_loss_bypasses_armor_and_block() {
     let mut battle = Battle::new(
         left,
         right,
-        BattleConfig::new(30, 1).expect("valid battle config"),
+        BattleConfig::new(28, 1).expect("valid battle config"),
     );
 
     // When
-    let report = report_at(&mut battle, 30);
+    let report = report_at(&mut battle, 28);
 
     // Then
     assert!(report.events.iter().any(|event| matches!(
