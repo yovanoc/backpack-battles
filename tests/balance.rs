@@ -53,14 +53,14 @@ fn per_item_tallies_sum_to_bag_appearances() {
 }
 
 #[test]
-fn rotating_a_vertical_item_makes_it_horizontal() {
+fn rotating_a_horizontal_item_makes_it_vertical() {
     // Given / When
     let upright = Item::new(ItemKind::WoodenSword, Cell::new(0, 0));
     let rotated = Item::with_rotation(ItemKind::WoodenSword, Cell::new(0, 0), Rotation::Deg90);
 
     // Then
-    assert_eq!(sorted_cells(&upright), vec![cell(0, 0), cell(0, 1)]);
-    assert_eq!(sorted_cells(&rotated), vec![cell(0, 0), cell(1, 0)]);
+    assert_eq!(sorted_cells(&upright), vec![cell(0, 0), cell(1, 0)]);
+    assert_eq!(sorted_cells(&rotated), vec![cell(0, 0), cell(0, 1)]);
 }
 
 fn sorted_cells(item: &Item) -> Vec<Offset> {

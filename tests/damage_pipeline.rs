@@ -111,7 +111,7 @@ fn war_banner_adds_seven_damage_to_an_adjacent_weapon() {
         100,
         Bag::new(vec![
             Item::new(ItemKind::WoodenSword, Cell::new(0, 0)),
-            Item::new(ItemKind::WarBanner, Cell::new(1, 0)),
+            Item::new(ItemKind::WarBanner, Cell::new(0, 1)),
         ])
         .expect("valid offensive placement"),
     );
@@ -365,7 +365,7 @@ fn defensive_hero(with_cactus: bool) -> Hero {
         Item::new(ItemKind::Shield, Cell::new(3, 0)),
     ];
     if with_cactus {
-        items.push(Item::new(ItemKind::Cactus, Cell::new(2, 0)));
+        items.push(Item::new(ItemKind::Cactus, Cell::new(0, 2)));
     }
     Hero::new(
         "right",

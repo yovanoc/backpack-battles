@@ -79,7 +79,7 @@ fn whetstone_boosts_an_adjacent_weapon() {
         30,
         vec![
             item(ItemKind::WoodenSword, 0, 0),
-            item(ItemKind::Whetstone, 1, 0),
+            item(ItemKind::Whetstone, 0, 1),
         ],
     );
     let mut battle = Battle::new(
@@ -107,7 +107,7 @@ fn bag_rejects_overlapping_item_shapes() {
     // Given / When
     let bag = Bag::new(vec![
         item(ItemKind::WoodenSword, 0, 0),
-        item(ItemKind::Whetstone, 0, 1),
+        item(ItemKind::Whetstone, 1, 0),
     ]);
 
     // Then
@@ -115,7 +115,7 @@ fn bag_rejects_overlapping_item_shapes() {
         bag,
         Err(BagError::Overlap {
             item: ItemKind::Whetstone,
-            at: Cell::new(0, 1),
+            at: Cell::new(1, 0),
         })
     );
 }

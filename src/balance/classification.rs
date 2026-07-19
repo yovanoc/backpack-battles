@@ -30,7 +30,7 @@ mod tests {
     fn tied_cell_investment_has_no_dominant_archetype() {
         let bag = Bag::new(vec![
             Item::new(ItemKind::Dagger, Cell::new(0, 0)),
-            Item::new(ItemKind::PoisonVial, Cell::new(1, 0)),
+            Item::new(ItemKind::PoisonVial, Cell::new(0, 1)),
         ])
         .expect("valid bag");
 
@@ -41,7 +41,8 @@ mod tests {
     fn greatest_cell_investment_is_dominant() {
         let bag = Bag::new(vec![
             Item::new(ItemKind::WoodenSword, Cell::new(0, 0)),
-            Item::new(ItemKind::PoisonVial, Cell::new(1, 0)),
+            Item::new(ItemKind::Dagger, Cell::new(0, 1)),
+            Item::new(ItemKind::PoisonVial, Cell::new(0, 2)),
         ])
         .expect("valid bag");
 
