@@ -9,6 +9,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 mod balance_command;
 mod catalog_command;
 mod meta_command;
+mod verdict_command;
 mod watch;
 
 #[derive(Parser)]
@@ -103,6 +104,25 @@ enum Commands {
         #[arg(long)]
         no_rotate: bool,
     },
+    /// Grade the meta against s17n's pass/fail balance criteria on the elite
+    /// counter-graph: no wells, contested counters, substantial counters,
+    /// cycles present, living roster.
+    Verdict {
+        #[arg(long, default_value_t = 400)]
+        candidates: u64,
+        #[arg(long, default_value_t = 96)]
+        panel: u64,
+        #[arg(long, default_value_t = 32)]
+        elite: usize,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        ticks: u16,
+        #[arg(long, default_value_t = 100)]
+        health: u16,
+        #[arg(long)]
+        no_rotate: bool,
+    },
 }
 
 fn main() -> ExitCode {
@@ -136,6 +156,23 @@ fn main() -> ExitCode {
             health,
             no_rotate,
         } => meta_command::run(MetaConfig {
+            candidates,
+            panel,
+            seed,
+            tick_limit: ticks,
+            hero_health: health,
+            allow_rotation: !no_rotate,
+            elite_size: elite,
+        }),
+        Commands::Verdict {
+            candidates,
+            panel,
+            elite,
+            seed,
+            ticks,
+            health,
+            no_rotate,
+        } => verdict_command::run(MetaConfig {
             candidates,
             panel,
             seed,
