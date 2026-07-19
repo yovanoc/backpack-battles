@@ -4,16 +4,17 @@ use crate::{
     BattleEvent, Combat, DamageMode, Effect, EffectKind, FallCause, ItemRef, ItemTarget, Side,
 };
 
-/// Rubber-band "last stand": a hero below RALLY_START_DEFICIT_PCT of max health
-/// scales both defense and offense with how far behind it is - the more beaten
-/// down, the more weapon damage it shrugs off and the harder it hits back. This
-/// keeps leads contestable late instead of snowballing. Raw poison and
-/// health-loss ignore it by design.
+/// Defensive "last stand": a hero below RALLY_START_DEFICIT_PCT of max health
+/// takes progressively less weapon damage the further behind it is, keeping
+/// leads contestable late instead of snowballing. Offense comebacks are a
+/// drafted item (Vengeance), not a global rule. Raw poison and health-loss
+/// ignore last stand by design.
 const RALLY_START_DEFICIT_PCT: u32 = 50;
 /// Peak incoming weapon-damage reduction (percent) at near-death.
 const RALLY_MAX_MITIGATION_PCT: u32 = 40;
-/// Peak outgoing weapon-damage bonus (percent) at near-death.
-const RALLY_MAX_BONUS_PCT: u32 = 60;
+/// A Vengeance weapon adds up to this percent of its damage, scaled by the
+/// fraction of the wielder's max health that is missing (full range).
+const VENGEANCE_MAX_BONUS_PCT: u32 = 150;
 
 /// Rally intensity 0..=100: 0 at/above the deficit threshold, rising linearly
 /// to 100 at 0 health.
@@ -195,18 +196,22 @@ impl Combat {
             self.hero(source.side).bag.adjacent_damage_bonus(source.id)
         });
         let source_hero = self.hero(source.side);
-        let source_rally = rally_pct(source_hero.health, source_hero.max_health());
+        let source_missing_pct =
+            u32::from(source_hero.max_health().saturating_sub(source_hero.health)) * 100
+                / u32::from(source_hero.max_health().max(1));
+        let vengeful = source_kind.is_some_and(|kind| kind.vengeful());
         // Retaliation is raw (design layer-5): it ignores armor and block.
         let armor = match damage.mode {
             DamageMode::Normal => self.hero(damage.target).armor(),
             DamageMode::Piercing | DamageMode::Retaliation => 0,
         };
         let boosted = match damage.mode {
-            DamageMode::Normal | DamageMode::Piercing => {
-                let bonus = u32::from(damage.amount) * RALLY_MAX_BONUS_PCT * source_rally / 10_000;
+            DamageMode::Normal | DamageMode::Piercing if vengeful => {
+                let bonus = u32::from(damage.amount) * source_missing_pct * VENGEANCE_MAX_BONUS_PCT
+                    / 10_000;
                 damage.amount.saturating_add(bonus as u16)
             }
-            DamageMode::Retaliation => damage.amount,
+            DamageMode::Normal | DamageMode::Piercing | DamageMode::Retaliation => damage.amount,
         };
         let after_armor = boosted.saturating_add(adjacent_bonus).saturating_sub(armor);
         let max_health = self.hero(damage.target).max_health();

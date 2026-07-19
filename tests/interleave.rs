@@ -114,7 +114,7 @@ fn defender_opens_with_guard_block_spent_after_armor() {
     assert_eq!(opening.right_block, DEFENDER_GUARD);
 
     // Guard is 2, so the 7 that lands after armor spends the whole guard and 5 leaks.
-    let right_max = 500 + 28; // Armor +28 max health
+    let right_max = 500 + 46; // Armor +46 max health
     let report = report_at(&mut battle, 20);
     assert_eq!(
         report.right_block, 0,

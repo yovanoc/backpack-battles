@@ -104,7 +104,9 @@ pub(crate) fn battle_start(item: &mut Item, source: ItemRef) -> Vec<Effect> {
         | ItemState::Grindstone
         | ItemState::Metronome
         | ItemState::MedicBag
-        | ItemState::RallyingHorn => Vec::new(),
+        | ItemState::RallyingHorn
+        | ItemState::Vengeance
+        | ItemState::TimeBomb => Vec::new(),
     }
 }
 
@@ -191,6 +193,8 @@ pub(crate) fn tick(item: &mut Item, source: ItemRef, health: u16, max_health: u1
         | ItemState::Grindstone
         | ItemState::Metronome
         | ItemState::RallyingHorn
+        | ItemState::Vengeance
+        | ItemState::TimeBomb
         | ItemState::MedicBag => Vec::new(),
     }
 }

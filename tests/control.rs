@@ -6,8 +6,7 @@ fn strap_intercepts_targeted_item_fall() {
     let left = Hero::new(
         "left",
         100,
-        Bag::new(vec![Item::new(ItemKind::GrapplingHook, Cell::new(0, 0))])
-            .expect("valid grappling hook placement"),
+        Bag::new(vec![Item::new(ItemKind::Bola, Cell::new(0, 0))]).expect("valid bola placement"),
     );
     let right = Hero::new(
         "right",
@@ -25,7 +24,7 @@ fn strap_intercepts_targeted_item_fall() {
     );
 
     // When
-    let report = report_at(&mut battle, 60);
+    let report = report_at(&mut battle, 1);
 
     // Then
     assert!(report.events.iter().any(|event| matches!(

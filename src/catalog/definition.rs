@@ -25,6 +25,7 @@ pub(crate) struct Definition {
     pub(crate) adjacent_damage: u16,
     pub(crate) retaliation: u16,
     pub(crate) natural_fall: Option<NaturalFall>,
+    pub(crate) vengeful: bool,
 }
 
 impl Definition {
@@ -41,6 +42,7 @@ impl Definition {
             adjacent_damage: 0,
             retaliation: 0,
             natural_fall: None,
+            vengeful: false,
         }
     }
 
@@ -87,6 +89,11 @@ impl Definition {
 
     pub(crate) const fn natural_fall(mut self, every: u16, one_in: u64) -> Self {
         self.natural_fall = Some(NaturalFall { every, one_in });
+        self
+    }
+
+    pub(crate) const fn vengeful(mut self) -> Self {
+        self.vengeful = true;
         self
     }
 }

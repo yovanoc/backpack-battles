@@ -1,6 +1,6 @@
 # Item Catalog
 
-All 50 items with their exact battle data, grouped by archetype. Source of truth:
+All 52 items with their exact battle data, grouped by archetype. Source of truth:
 [`src/catalog/mod.rs`](src/catalog/mod.rs), [`src/item_description.rs`](src/item_description.rs).
 
 ## Column meaning
@@ -31,20 +31,22 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Katana | 1×2 | 4 | 22/22 | ✔ | 9 normal damage |
 | Throwing Axe | 2×1 | 3 | 18/36 | ✔ | 11 piercing damage |
 | Morning Star | L(3) | 6 | 34/34 | ✔ | 14 normal damage |
+| Vengeance | 1×2 | 3 | 24/24 | ✔ | 6 normal damage, +up to 150% scaled by health lost |
+| Time Bomb | 2×1 | 1 | 90/90 | — | 40 piercing damage; consumed |
 
 ## Defense
 
 | Item | Shape | Wt | Act | Armor | HP | Retal | Fall | Effect |
 |---|---|---|---|---|---|---|---|---|
-| Loose Buckler | 2×2 | 1 | — | 2 | 42 | — | 1-in-8 every 20 | +42 health, +2 armor |
-| Armor | 2×2 | 10 | — | 1 | 28 | — | fixed | +28 health, +1 armor; cannot fall |
+| Loose Buckler | 2×2 | 1 | — | 2 | 60 | — | 1-in-8 every 20 | +60 health, +2 armor |
+| Armor | 2×2 | 10 | — | 1 | 46 | — | fixed | +46 health, +1 armor; cannot fall |
 | Shield | 1×2 | 1 | 25/25 | — | — | — | — | +6 block, maximum 20; cleanse 3 poison |
 | Potted Cactus | 1×1 | 1 | — | — | — | 2 | — | retaliate for 2 damage when hit |
 | Healing Potion | 1×1 | 1 | — | — | — | — | — | heal 16 below half health, then consume |
 | Thornmail | L(3) | 1 | — | 1 | — | 3 | — | +1 armor; retaliate for 3 damage |
 | Spiked Targe | 1×1 | 1 | 20/20 | — | — | 1 | — | +3 block, maximum 12; retaliate for 1 damage; cleanse 2 poison |
-| Pavise | 3×1 | 8 | — | 1 | 16 | — | fixed | +16 health, +1 armor; cannot fall |
-| Chainmail | 2×2 | 9 | — | 3 | 26 | — | fixed | +26 health, +3 armor; cannot fall |
+| Pavise | 3×1 | 8 | — | 1 | 30 | — | fixed | +30 health, +1 armor; cannot fall |
+| Chainmail | 2×2 | 9 | — | 3 | 42 | — | fixed | +42 health, +3 armor; cannot fall |
 | Bulwark | 1×2 | 1 | 30/30 | — | — | — | — | +10 block, maximum 30; cleanse 4 poison |
 
 ## Scaling
@@ -66,7 +68,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 
 | Item | Shape | Wt | Act | Effect |
 |---|---|---|---|---|
-| Grappling Hook | 1×2 | 1 | 60/60 | force lightest edge item to fall; 2 uses |
+| Grappling Hook | 1×2 | 1 | 60/60 | 1/2 force lightest edge item to fall; 2 uses |
 | Weighted Net | 1×1 | 1 | — | force lightest edge weapon to fall at battle start |
 | Bomb | 2×1 | 1 | 30/30 | 10 piercing damage, then 1/2 drop lightest edge weapon; consumed |
 | Caltrops | 3×1 | 1 | 30/30 | 2 normal damage; delay enemy's next activation by 6 ticks |
@@ -75,7 +77,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Bear Trap | L(3) | 1 | 24/35 | 12 piercing damage, then drop lightest edge item; consumed |
 | Bola | 1×1 | 1 | — | force lightest edge item to fall at battle start; consumed |
 | Grenade | 2×1 | 1 | 25/25 | 8 piercing damage, then 1/3 drop lightest edge item; consumed |
-| Harpoon Gun | 1×2 | 1 | 45/45 | force lightest edge item to fall; 3 uses |
+| Harpoon Gun | 1×2 | 1 | 45/45 | 1/2 force lightest edge item to fall; 3 uses |
 
 ## Support
 

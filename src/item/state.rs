@@ -52,6 +52,8 @@ pub(crate) enum ItemState {
     Metronome,
     MedicBag,
     RallyingHorn,
+    Vengeance,
+    TimeBomb,
 }
 
 impl ItemState {
@@ -107,6 +109,8 @@ impl ItemState {
             ItemKind::Metronome => Self::Metronome,
             ItemKind::MedicBag => Self::MedicBag,
             ItemKind::RallyingHorn => Self::RallyingHorn,
+            ItemKind::Vengeance => Self::Vengeance,
+            ItemKind::TimeBomb => Self::TimeBomb,
         }
     }
 
@@ -162,6 +166,8 @@ impl ItemState {
             Self::Metronome => ItemKind::Metronome,
             Self::MedicBag => ItemKind::MedicBag,
             Self::RallyingHorn => ItemKind::RallyingHorn,
+            Self::Vengeance => ItemKind::Vengeance,
+            Self::TimeBomb => ItemKind::TimeBomb,
         }
     }
 
@@ -198,7 +204,9 @@ impl ItemState {
             | Self::VampiricBlade
             | Self::PlagueCenser
             | Self::Grenade
-            | Self::Metronome => true,
+            | Self::Metronome
+            | Self::Vengeance
+            | Self::TimeBomb => true,
             Self::Whetstone
             | Self::LooseBuckler
             | Self::Armor

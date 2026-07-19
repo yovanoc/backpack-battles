@@ -61,7 +61,7 @@ pub(crate) fn activate(item: &mut Item, source: ItemRef) -> Vec<Effect> {
                         weapons_only: false,
                     },
                     cause: FallCause::Forced { source },
-                    chance: None,
+                    chance: Some(2),
                 },
             )]
         }
@@ -184,6 +184,11 @@ pub(crate) fn activate(item: &mut Item, source: ItemRef) -> Vec<Effect> {
         ItemState::Katana => vec![damage(source, 9, DamageMode::Normal)],
         ItemState::ThrowingAxe => vec![damage(source, 11, DamageMode::Piercing)],
         ItemState::MorningStar => vec![damage(source, 14, DamageMode::Normal)],
+        ItemState::Vengeance => vec![damage(source, 6, DamageMode::Normal)],
+        ItemState::TimeBomb => vec![
+            damage(source, 40, DamageMode::Piercing),
+            Effect::new(source, EffectKind::Consume { target: source }),
+        ],
         ItemState::Bulwark => vec![
             Effect::new(
                 source,
@@ -263,7 +268,7 @@ pub(crate) fn activate(item: &mut Item, source: ItemRef) -> Vec<Effect> {
                         weapons_only: false,
                     },
                     cause: FallCause::Forced { source },
-                    chance: None,
+                    chance: Some(2),
                 },
             )]
         }

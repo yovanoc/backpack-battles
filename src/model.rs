@@ -5,11 +5,10 @@ use crate::{Bag, ItemKind, ItemRef};
 pub const MAX_TICKS: u16 = 2000;
 pub const TICK_DURATION: Duration = Duration::from_millis(100);
 
-/// Base health each hero starts with before bag max-health bonuses. High (500)
-/// so battles run long and ramping/scaling builds have time to come online:
-/// fixed-damage effects (poison, weapons) are relatively weaker, favoring
-/// late-game power and comebacks.
-pub const BASE_HEALTH: u16 = 500;
+/// Base health each hero starts with before bag max-health bonuses. 300 gives
+/// long-ish fights with room for ramping/scaling builds and comebacks to come
+/// online, without the grind-out tail of very high HP pools.
+pub const BASE_HEALTH: u16 = 300;
 
 /// Opening block reserve the defending (right) hero starts each battle with,
 /// calibrated to offset the attacker's even-rank timing edge (design §13).

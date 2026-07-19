@@ -55,6 +55,8 @@ pub enum ItemKind {
     Metronome,
     MedicBag,
     RallyingHorn,
+    Vengeance,
+    TimeBomb,
 }
 
 impl ItemKind {
@@ -77,7 +79,9 @@ impl ItemKind {
             | Self::Warhammer
             | Self::Katana
             | Self::ThrowingAxe
-            | Self::MorningStar => Archetype::Aggression,
+            | Self::MorningStar
+            | Self::Vengeance
+            | Self::TimeBomb => Archetype::Aggression,
             Self::LooseBuckler
             | Self::Armor
             | Self::Shield
@@ -153,6 +157,10 @@ impl ItemKind {
         self.definition().retaliation
     }
 
+    pub(crate) const fn vengeful(self) -> bool {
+        self.definition().vengeful
+    }
+
     pub(crate) const fn natural_fall(self) -> Option<NaturalFall> {
         self.definition().natural_fall
     }
@@ -169,11 +177,11 @@ impl ItemKind {
             Self::Hourglass => Definition::new("Hourglass", &ONE).activation(20, 20),
             Self::LooseBuckler => Definition::new("Loose Buckler", &SQUARE)
                 .armor(2)
-                .max_health(42)
+                .max_health(60)
                 .natural_fall(20, 8),
             Self::Armor => Definition::new("Armor", &SQUARE)
                 .armor(1)
-                .max_health(28)
+                .max_health(46)
                 .weight(10)
                 .fixed(),
             Self::Shield => Definition::new("Shield", &VERTICAL_TWO).activation(25, 25),
@@ -218,7 +226,7 @@ impl ItemKind {
                 .retaliation(1),
             Self::Pavise => Definition::new("Pavise", &LINE_THREE)
                 .armor(1)
-                .max_health(16)
+                .max_health(30)
                 .weight(8)
                 .fixed(),
             Self::DoomCandle => Definition::new("Doom Candle", &ONE).activation(45, 20),
@@ -242,9 +250,14 @@ impl ItemKind {
             Self::MorningStar => Definition::new("Morning Star", &L_TROMINO)
                 .activation(34, 34)
                 .weapon(6),
+            Self::Vengeance => Definition::new("Vengeance", &VERTICAL_TWO)
+                .activation(24, 24)
+                .weapon(3)
+                .vengeful(),
+            Self::TimeBomb => Definition::new("Time Bomb", &HORIZONTAL_TWO).activation(90, 90),
             Self::Chainmail => Definition::new("Chainmail", &SQUARE)
                 .armor(3)
-                .max_health(26)
+                .max_health(42)
                 .weight(9)
                 .fixed(),
             Self::Bulwark => Definition::new("Bulwark", &VERTICAL_TWO).activation(30, 30),
@@ -272,7 +285,7 @@ impl ItemKind {
 }
 
 impl ItemKind {
-    pub const ALL: [Self; 50] = [
+    pub const ALL: [Self; 52] = [
         Self::WoodenSword,
         Self::Crossbow,
         Self::Whetstone,
@@ -323,6 +336,8 @@ impl ItemKind {
         Self::Metronome,
         Self::MedicBag,
         Self::RallyingHorn,
+        Self::Vengeance,
+        Self::TimeBomb,
     ];
     pub const COUNT: usize = Self::ALL.len();
 }
