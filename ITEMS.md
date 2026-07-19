@@ -44,7 +44,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Thornmail | L(3) | 1 | — | 1 | — | 3 | — | +1 armor; retaliate for 3 damage |
 | Spiked Targe | 1×1 | 1 | 20/20 | — | — | 1 | — | +3 block, maximum 12; retaliate for 1 damage; cleanse 2 poison |
 | Pavise | 3×1 | 8 | — | 1 | 16 | — | fixed | +16 health, +1 armor; cannot fall |
-| Chainmail | 2×2 | 9 | — | 3 | 14 | — | fixed | +14 health, +3 armor; cannot fall |
+| Chainmail | 2×2 | 9 | — | 3 | 26 | — | fixed | +26 health, +3 armor; cannot fall |
 | Bulwark | 1×2 | 1 | 30/30 | — | — | — | — | +10 block, maximum 30; cleanse 4 poison |
 
 ## Scaling

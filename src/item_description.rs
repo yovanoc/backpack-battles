@@ -56,7 +56,7 @@ impl ItemKind {
             Self::Katana => "9 normal damage",
             Self::ThrowingAxe => "11 piercing damage",
             Self::MorningStar => "14 normal damage",
-            Self::Chainmail => "+14 health, +3 armor; cannot fall",
+            Self::Chainmail => "+26 health, +3 armor; cannot fall",
             Self::Bulwark => "+10 block, maximum 30; cleanse 4 poison",
             Self::VenomFang => "apply 2 poison",
             Self::Spellbook => "6 normal damage, +4 each activation; cannot fall",

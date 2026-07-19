@@ -5,11 +5,14 @@ use crate::{
 };
 
 /// A hero at or below this percentage of max health is in "last stand": it
-/// takes reduced weapon damage, compressing blowouts into closer fights and
-/// opening comeback windows. Raw poison and health-loss ignore it by design.
+/// takes reduced weapon damage AND deals boosted weapon damage, so a cornered
+/// hero can flip the lead late instead of merely stalling. Raw poison and
+/// health-loss ignore last stand by design.
 const RALLY_THRESHOLD_PCT: u32 = 30;
 /// Fraction (1/N) of weapon damage shrugged off while in last stand.
 const RALLY_MITIGATION_DIVISOR: u16 = 3;
+/// Fraction (1/N) of extra weapon damage a hero deals while in last stand.
+const RALLY_DAMAGE_BONUS_DIVISOR: u16 = 2;
 
 impl Combat {
     pub(crate) fn resolve_effects(&mut self, effects: Vec<Effect>, events: &mut Vec<BattleEvent>) {
@@ -179,15 +182,21 @@ impl Combat {
         let adjacent_bonus = source_kind.filter(|kind| kind.is_weapon()).map_or(0, |_| {
             self.hero(source.side).bag.adjacent_damage_bonus(source.id)
         });
+        let source_hero = self.hero(source.side);
+        let source_rallying = u32::from(source_hero.health) * 100
+            <= u32::from(source_hero.max_health()) * RALLY_THRESHOLD_PCT;
         // Retaliation is raw (design layer-5): it ignores armor and block.
         let armor = match damage.mode {
             DamageMode::Normal => self.hero(damage.target).armor(),
             DamageMode::Piercing | DamageMode::Retaliation => 0,
         };
-        let after_armor = damage
-            .amount
-            .saturating_add(adjacent_bonus)
-            .saturating_sub(armor);
+        let boosted = match damage.mode {
+            DamageMode::Normal | DamageMode::Piercing if source_rallying => damage
+                .amount
+                .saturating_add(damage.amount / RALLY_DAMAGE_BONUS_DIVISOR),
+            DamageMode::Normal | DamageMode::Piercing | DamageMode::Retaliation => damage.amount,
+        };
+        let after_armor = boosted.saturating_add(adjacent_bonus).saturating_sub(armor);
         let max_health = self.hero(damage.target).max_health();
         let hero = self.hero_mut(damage.target);
         let blocked = match damage.mode {

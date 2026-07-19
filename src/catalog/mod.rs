@@ -244,7 +244,7 @@ impl ItemKind {
                 .weapon(6),
             Self::Chainmail => Definition::new("Chainmail", &SQUARE)
                 .armor(3)
-                .max_health(14)
+                .max_health(26)
                 .weight(9)
                 .fixed(),
             Self::Bulwark => Definition::new("Bulwark", &VERTICAL_TWO).activation(30, 30),
