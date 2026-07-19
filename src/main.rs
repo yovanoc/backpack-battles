@@ -2,12 +2,13 @@ use std::{process::ExitCode, thread};
 
 use backpack_battles::{
     BalanceConfig, Battle, BattleConfig, BattleEvent, BattleUpdate, CampaignMode, FallCause,
-    TICK_DURATION, demo_heroes,
+    MetaConfig, TICK_DURATION, demo_heroes,
 };
 use clap::{Parser, Subcommand, ValueEnum};
 
 mod balance_command;
 mod catalog_command;
+mod meta_command;
 mod watch;
 
 #[derive(Parser)]
@@ -84,6 +85,24 @@ enum Commands {
         #[arg(long, default_value_t = 1.0, value_parser = watch::parse_speed)]
         speed: f64,
     },
+    /// Draft many bags, select the winning elite, and report item presence and
+    /// build diversity - the mixed-bag meta health, not pure archetypes.
+    Meta {
+        #[arg(long, default_value_t = 400)]
+        candidates: u64,
+        #[arg(long, default_value_t = 96)]
+        panel: u64,
+        #[arg(long, default_value_t = 40)]
+        elite: usize,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long, default_value_t = 600, value_parser = clap::value_parser!(u16).range(1..=600))]
+        ticks: u16,
+        #[arg(long, default_value_t = 100)]
+        health: u16,
+        #[arg(long)]
+        no_rotate: bool,
+    },
 }
 
 fn main() -> ExitCode {
@@ -108,6 +127,23 @@ fn main() -> ExitCode {
             campaign_mode: campaign.into(),
         }),
         Commands::Watch { seed, ticks, speed } => watch::run(seed, ticks, speed),
+        Commands::Meta {
+            candidates,
+            panel,
+            elite,
+            seed,
+            ticks,
+            health,
+            no_rotate,
+        } => meta_command::run(MetaConfig {
+            candidates,
+            panel,
+            seed,
+            tick_limit: ticks,
+            hero_health: health,
+            allow_rotation: !no_rotate,
+            elite_size: elite,
+        }),
     }
 }
 

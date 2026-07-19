@@ -2,12 +2,14 @@ use crate::{Archetype, Bag, BattleConfig, ConfigError, FallTelemetry, ItemKind, 
 
 mod classification;
 mod generator;
+mod meta;
 mod shard;
 mod stat;
 mod swap;
 
 use classification::dominant_archetype;
 pub(crate) use generator::random_bag;
+pub use meta::{ItemPresence, MetaConfig, MetaReport, run_meta};
 pub use stat::{BalanceReport, ItemStat, MatchupStat};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

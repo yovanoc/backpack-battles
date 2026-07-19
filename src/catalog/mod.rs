@@ -168,8 +168,8 @@ impl ItemKind {
             Self::Whetstone => Definition::new("Whetstone", &ONE).adjacent_damage(2),
             Self::Hourglass => Definition::new("Hourglass", &ONE).activation(20, 20),
             Self::LooseBuckler => Definition::new("Loose Buckler", &SQUARE)
-                .armor(1)
-                .max_health(20)
+                .armor(2)
+                .max_health(28)
                 .natural_fall(20, 8),
             Self::Armor => Definition::new("Armor", &SQUARE)
                 .armor(1)
@@ -190,7 +190,8 @@ impl ItemKind {
                 .weapon(2),
             Self::Spear => Definition::new("Spear", &L_TETROMINO)
                 .activation(30, 30)
-                .weapon(5),
+                .weapon(5)
+                .max_health(12),
             Self::WarBanner => Definition::new("War Banner", &LINE_THREE)
                 .adjacent_damage(7)
                 .max_health(10),

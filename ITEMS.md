@@ -24,7 +24,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 | Wooden Sword | 1×2 | 3 | 20/20 | ✔ | 8 normal damage |
 | Crossbow | 2×1 | 4 | 15/30 | ✔ | 10 normal damage |
 | Windbreaker | 1×1 | 2 | 25/25 | ✔ | 6 piercing damage |
-| Spear | L(4) | 5 | 30/30 | ✔ | 16 normal damage |
+| Spear | L(4) | 5 | 30/30 | ✔ | 16 normal damage; +12 health |
 | Dagger | 1×1 | 1 | 5/13 | ✔ | 4 normal damage |
 | Rapier | 1×2 | 3 | 26/26 | ✔ | 6 piercing damage |
 | Warhammer | 2×2 | 10 | 37/37 | ✔ | 18 normal damage; cannot fall (`fixed`) |
@@ -36,7 +36,7 @@ All 50 items with their exact battle data, grouped by archetype. Source of truth
 
 | Item | Shape | Wt | Act | Armor | HP | Retal | Fall | Effect |
 |---|---|---|---|---|---|---|---|---|
-| Loose Buckler | 2×2 | 1 | — | 1 | 20 | — | 1-in-8 every 20 | +20 health, +1 armor |
+| Loose Buckler | 2×2 | 1 | — | 2 | 28 | — | 1-in-8 every 20 | +28 health, +2 armor |
 | Armor | 2×2 | 10 | — | 1 | 28 | — | fixed | +28 health, +1 armor; cannot fall |
 | Shield | 1×2 | 1 | 25/25 | — | — | — | — | +6 block, maximum 20; cleanse 3 poison |
 | Potted Cactus | 1×1 | 1 | — | — | — | 2 | — | retaliate for 2 damage when hit |
