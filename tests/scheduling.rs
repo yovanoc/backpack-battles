@@ -67,7 +67,6 @@ fn accumulated_speed_shortens_an_active_charge() {
         Bag::new(vec![
             Item::new(ItemKind::Hourglass, Cell::new(1, 0)),
             Item::new(ItemKind::Hourglass, Cell::new(2, 0)),
-            Item::new(ItemKind::Hourglass, Cell::new(0, 1)),
             Item::new(ItemKind::Crossbow, Cell::new(1, 1)),
         ])
         .expect("valid charging layout"),

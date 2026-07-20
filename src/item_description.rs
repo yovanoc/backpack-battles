@@ -1,5 +1,24 @@
 use crate::ItemKind;
 
+/// Every authored stat for an item kind, flattened for external consumers
+/// (the wasm bridge / viewer). The engine itself reads the crate-private
+/// `Definition`; this is the one public window onto the same numbers.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ItemStats {
+    pub weapon: bool,
+    pub weight: u16,
+    pub can_fall: bool,
+    pub armor: u16,
+    pub max_health: u16,
+    pub adjacent_damage: u16,
+    pub retaliation: u16,
+    pub vengeful: bool,
+    pub first_activation: Option<u16>,
+    pub cadence: Option<u16>,
+    pub natural_fall_every: Option<u16>,
+    pub natural_fall_one_in: Option<u64>,
+}
+
 impl ItemKind {
     pub const fn first_activation(self) -> Option<u16> {
         match self.activation() {
@@ -12,6 +31,28 @@ impl ItemKind {
         match self.activation() {
             Some(timing) => Some(timing.recurring),
             None => None,
+        }
+    }
+
+    /// All authored stats for this kind, in one public struct.
+    pub const fn stats(self) -> ItemStats {
+        let (natural_fall_every, natural_fall_one_in) = match self.natural_fall() {
+            Some(fall) => (Some(fall.every), Some(fall.one_in)),
+            None => (None, None),
+        };
+        ItemStats {
+            weapon: self.is_weapon(),
+            weight: self.weight(),
+            can_fall: self.can_fall(),
+            armor: self.armor(),
+            max_health: self.max_health(),
+            adjacent_damage: self.adjacent_damage(),
+            retaliation: self.retaliation(),
+            vengeful: self.vengeful(),
+            first_activation: self.first_activation(),
+            cadence: self.cadence(),
+            natural_fall_every,
+            natural_fall_one_in,
         }
     }
 

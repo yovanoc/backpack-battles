@@ -18,6 +18,7 @@ pub use battle::*;
 pub use catalog::ItemKind;
 pub use geometry::*;
 pub use item::{Item, ItemId, ItemRef};
+pub use item_description::ItemStats;
 pub use model::*;
 
 pub(crate) use combat::Combat;

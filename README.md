@@ -76,3 +76,20 @@ cargo test                                              # unit + integration tes
 cargo clippy --all-targets --all-features -- -D warnings
 cargo fmt --check
 ```
+
+### Web viewer
+
+```sh
+cd viewer
+pnpm install
+pnpm dev       # live Vite viewer; rebuilds use the generated wasm package
+pnpm test
+pnpm build     # rebuild wasm + typecheck + production bundle
+pnpm zip       # build + create viewer/backpack-battles-viewer.zip for upload
+```
+
+The viewer runs the Rust engine through WebAssembly, supports editable left and
+right bags, and uses the generated `tsify` declarations as its TypeScript API.
+The zip contains the deployable files at its root (`index.html`, runtime chunks,
+WASM, and the 36 used Kenney sprites), with no source, unused art, `node_modules`,
+or build tooling.

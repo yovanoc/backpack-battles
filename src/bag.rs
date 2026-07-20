@@ -10,7 +10,12 @@ pub struct Bag {
 impl Bag {
     pub fn new(mut items: Vec<Item>) -> Result<Self, BagError> {
         let mut occupied = [false; BAG_CELLS];
+        let mut copies = [0_u8; ItemKind::COUNT];
         for item in &items {
+            copies[item.kind() as usize] += 1;
+            if copies[item.kind() as usize] > 2 {
+                return Err(BagError::TooManyCopies { item: item.kind() });
+            }
             for offset in item.shape() {
                 let position = item.position();
                 let Some(x) = position.x.checked_add(offset.x) else {
@@ -144,6 +149,7 @@ impl Bag {
 pub enum BagError {
     OutOfBounds { item: ItemKind },
     Overlap { item: ItemKind, at: Cell },
+    TooManyCopies { item: ItemKind },
 }
 
 impl fmt::Display for BagError {
@@ -159,6 +165,13 @@ impl fmt::Display for BagError {
                 at.x,
                 at.y
             ),
+            Self::TooManyCopies { item } => {
+                write!(
+                    formatter,
+                    "a bag can hold at most two {} items",
+                    item.name()
+                )
+            }
         }
     }
 }

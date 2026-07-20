@@ -52,6 +52,10 @@ impl Hero {
         self.block
     }
 
+    pub const fn poison(&self) -> u16 {
+        self.poison
+    }
+
     pub fn max_health(&self) -> u16 {
         self.base_max_health
             .saturating_add(self.bag.max_health_bonus())

@@ -39,7 +39,7 @@ pub(super) fn run(
     let mut selected = None;
     let mut candidate_count = 0;
     for kind in ItemKind::ALL {
-        if kind == original.kind() {
+        if kind == original.kind() || items.iter().filter(|item| item.kind() == kind).count() >= 2 {
             continue;
         }
         for rotation in rotations {

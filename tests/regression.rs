@@ -121,6 +121,24 @@ fn bag_rejects_overlapping_item_shapes() {
 }
 
 #[test]
+fn bag_rejects_a_third_copy_of_the_same_item() {
+    // Given / When
+    let bag = Bag::new(vec![
+        item(ItemKind::Whetstone, 0, 0),
+        item(ItemKind::Whetstone, 1, 0),
+        item(ItemKind::Whetstone, 2, 0),
+    ]);
+
+    // Then
+    assert_eq!(
+        bag,
+        Err(BagError::TooManyCopies {
+            item: ItemKind::Whetstone,
+        })
+    );
+}
+
+#[test]
 fn battle_config_rejects_tick_limits_outside_the_domain() {
     // Given / When / Then
     assert_eq!(
